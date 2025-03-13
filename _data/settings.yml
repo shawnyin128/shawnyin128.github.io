@@ -24,7 +24,7 @@ menu_settings:
   menu_items:
     - title: '🏠 Home'
       url: '/'
-    - title: '👨🏻‍💻 About'
+    - title: '👨‍💻 About'
       url: '/about/'
     - title: '🚀 Projects'
       url: '/projects/'
