@@ -43,7 +43,7 @@ menu_settings:
 author:
   author_name: Shawn Yin
   author_role: Software Developer
-  author_bio: Hi there! I’m a Master’s student 👨‍🎓 in Computer Science at NYU Courant, specializing in Artificial Intelligence 🤖. Prior to this, I earned my Master’s in Financial Engineering 📈 from NYU Tandon. I have industry experience as a Software Engineer and Big Data Engineer 💻. Over the years, I’ve worked on FinTech software development with large scale distributed systems . Currently, my passion lies in AI research, exploring how machine learning and deep learning can be applied to solve complex real-world problems. Always excited to dive into cutting-edge tech, data-driven insights, and innovative AI solutions! 🚀
+  author_bio: Hi there! I’m a Master’s student 👨‍🎓 in Computer Science at NYU Courant, specializing in Artificial Intelligence 🤖. Prior to this, I earned my Master’s in Financial Engineering 📈 from NYU Tandon. I have industry experience as a Software Engineer and Big Data Engineer 💻. Currently, my passion lies in AI research. Always excited to dive into cutting-edge tech, data-driven insights, and innovative AI solutions! 🚀
   author_avatar: '/images/avatar/a1.jpg'
   # cta_button_text: Get In Touch
   # cta_button_link: '/contact/'
