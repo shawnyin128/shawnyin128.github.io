@@ -2,14 +2,14 @@
 # Site Settings
 title: SY
 description: 
-color_scheme: dark # You have the option to choose between three modes: auto, light, and dark. The default mode is set to auto, which means that the color scheme will automatically adapt based on your operating system settings. This way, you can enjoy a personalized experience without having to manually switch between light and dark modes.
+color_scheme: auto # You have the option to choose between three modes: auto, light, and dark. The default mode is set to auto, which means that the color scheme will automatically adapt based on your operating system settings. This way, you can enjoy a personalized experience without having to manually switch between light and dark modes.
 
 
 #-------------------------------
 # Global Cover
 global_cover:
   enable: true
-  homepage_image: "/images/header/header_background.jpg" # This line allows you to add a beautiful image at the top of your site, creating an eye-catching visual element that enhances the overall appearance and appeal.
+  homepage_image: "/images/header/home_cover.jpg" # This line allows you to add a beautiful image at the top of your site, creating an eye-catching visual element that enhances the overall appearance and appeal.
 
 
 #-------------------------------
@@ -121,15 +121,15 @@ mailchimp_settings:
 social:
 # - {icon: "fa-brands fa-facebook", name: "Facebook", link: "https://facebook.com"}
 # - {icon: "fa-brands fa-x-twitter", name: "Twitter", link: "https://twitter.com"}
-- {icon: "fa-brands fa-github", name: "Github", link: "https://github.com"}
-- {icon: "fa-brands fa-instagram", name: "Instagram", link: "https://instagram.com"}
+- {icon: "fa-brands fa-github", name: "Github", link: "https://github.com/shawnyin128"}
+- {icon: "fa-brands fa-instagram", name: "Instagram", link: "https://www.instagram.com/shawnyin128/"}
 # - {icon: "fa-brands fa-tiktok", name: "Tiktok", link: "https://tiktok.com"}
 # - {icon: "fa-brands fa-youtube", name: "Youtube", link: "https://youtube.com"}
 # - {icon: "fa-brands fa-pinterest", name: "Pinterest", link: "https://pinterest.com"}
 # - {icon: "fa-brands fa-dribbble", name: "Dribbble", link: "https://dribbble.com"}
 # - {icon: "fa-brands fa-microsoft", name: "Microsoft", link: "https://microsoft.com"}
 # - {icon: "fa-brands fa-vimeo-v", name: "Vimeo", link: "https://vimeo.com"}
-- {icon: "fa-brands fa-linkedin", name: "LinkedIn", link: "https://vimeo.com"}
+- {icon: "fa-brands fa-linkedin", name: "LinkedIn", link: "https://www.linkedin.com/in/yxyoung128/"}
 
 # Example of adding a new link to the footer - {icon: "fa-brands fa-dribbble", name: "Dribbble" link: "https://dribbble.com"}
 # Other icons can be found at https://fontawesome.com/search?o=r&m=free
