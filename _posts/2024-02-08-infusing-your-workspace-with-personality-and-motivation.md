@@ -4,7 +4,7 @@ title: Infusing your workspace with personality and motivation
 description: Lighting plays a significant role in your home setup. Natural light is ideal, as it not only improves visibility but also has a positive impact on mood and well-being. Position your desk near a window or invest in high-quality artificial lighting to create environment.
 date: 2024-02-08 15:01:35 +0300
 image: '/images/07.jpg'
-tags: [workflow]
+tags: [AI, model]
 ---
 
 When designing your home setup, consider factors such as lighting, ergonomics, and organization. Ensure that your workspace is well-lit with natural or artificial light, as it can significantly impact your mood and energy levels. Invest in an ergonomic chair and adjustable desk to maintain good posture and reduce the risk of strain or discomfort.
