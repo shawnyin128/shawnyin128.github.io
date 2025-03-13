@@ -54,7 +54,7 @@ author:
 projects_settings:
   enable: true
   projects_title: Projects
-  projects_description: ppp
+  projects_description: 
 
 
 #-------------------------------
@@ -76,7 +76,7 @@ testimonial_items:
 blog_settings:
   enable: true
   blog_title: Blog
-  blog_description: www
+  blog_description: 
 
 
 #-------------------------------
@@ -92,7 +92,7 @@ videos_settings:
 gallery_settings:
   enable: true
   gallery_title: Gallery
-  gallery_description: ggg
+  gallery_description: 
 
 
 #-------------------------------
