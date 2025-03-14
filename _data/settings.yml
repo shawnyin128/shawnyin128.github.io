@@ -26,6 +26,8 @@ menu_settings:
       url: '/'
     - title: '👨‍💻 About'
       url: '/about/'
+    # - title: '📝 Publications'
+    #   url: '/publications/'
     - title: '🚀 Projects'
       url: '/projects/'
     - title: '✍️ Blog'
@@ -34,8 +36,6 @@ menu_settings:
       url: '/gallery/'
     # - title: '🎬 Videos'
     #   url: '/videos/'
-    # - title: '📔 Elements'
-    #   url: '/elements/'
 
 
 #-------------------------------
