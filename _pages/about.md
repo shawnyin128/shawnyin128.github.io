@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 👨‍💻 Curriculum Vitae
-description: What's past is prologue.
+description: "What's past is prologue."
 permalink: /about/
 image: 
 page_cover: '/images/header/about_cover.jpg'
