@@ -5,36 +5,21 @@
         <description></description>
         <link>http://localhost:4000/</link>
         <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sun, 27 Apr 2025 22:19:37 -0400</pubDate>
-        <lastBuildDate>Sun, 27 Apr 2025 22:19:37 -0400</lastBuildDate>
+        <pubDate>Sun, 27 Apr 2025 22:40:11 -0400</pubDate>
+        <lastBuildDate>Sun, 27 Apr 2025 22:40:11 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
         
             <item>
-                <title>Infusing your workspace with personality and motivation</title>
-                <description>&lt;p&gt;When designing your home setup, consider factors such as lighting, ergonomics, and organization. Ensure that your workspace is well-lit with natural or artificial light, as it can significantly impact your mood and energy levels. Invest in an ergonomic chair and adjustable desk to maintain good posture and reduce the risk of strain or discomfort.&lt;/p&gt;
-
-&lt;h2 id=&quot;creating-a-productive-routine&quot;&gt;Creating a Productive Routine&lt;/h2&gt;
-
-&lt;p&gt;The efficiency and productivity of your workflow greatly depend on the setup of your home office. Creating a designated workspace that is separate from the rest of your living area helps establish a clear boundary between work and leisure, enabling you to focus and concentrate on tasks at hand.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/07-1.jpg&quot; alt=&quot;Mobile&quot; /&gt;
-&lt;em&gt;Photo by &lt;a href=&quot;https://unsplash.com/photos/74tfa1hJQws&quot;&gt;Balázs Kétyi&lt;/a&gt; on &lt;a href=&quot;https://unsplash.com/&quot;&gt;Unsplash&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;Incorporating elements of inspiration and personalization into your home setup can help boost creativity and motivation. Display artwork, photographs, or motivational quotes that resonate with you. Consider adding plants to your workspace, as they not only add visual appeal but also purify the air and create a refreshing atmosphere.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Home Workspace Inspiration: Designing a Stylish and Functional Setup&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;A clutter-free environment is essential for maintaining a productive workflow. Keep your workspace organized by utilizing storage solutions such as shelves, drawers, or filing cabinets. Minimize distractions by keeping non-work-related items out of sight and creating a clean, minimalist aesthetic that promotes a sense of calm and focus.&lt;/p&gt;
+                <title>Lessons from AlexNet to ConvNeXt</title>
+                <description>
 </description>
-                <pubDate>Thu, 08 Feb 2024 07:01:35 -0500</pubDate>
-                <link>http://localhost:4000/blog/infusing-your-workspace-with-personality-and-motivation</link>
-                <guid isPermaLink="true">http://localhost:4000/blog/infusing-your-workspace-with-personality-and-motivation</guid>
+                <pubDate>Sun, 27 Apr 2025 11:27:59 -0400</pubDate>
+                <link>http://localhost:4000/blog/cnn-summary</link>
+                <guid isPermaLink="true">http://localhost:4000/blog/cnn-summary</guid>
                 
                 <category>AI</category>
                 
-                <category>model</category>
+                <category>CNN</category>
                 
                 
             </item>
