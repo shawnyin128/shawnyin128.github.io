@@ -71,7 +71,7 @@ The model operates as follows:
 In parallel, for each time step:
 - The ground truth observation o₁, o₂, ... is encoded by Enc_ψ to generate the target representations s′₁, s′₂, ....
 
-The training objective is to minimize the distance between the predicted latent states sₜ and the encoded ground truth representations s′ₜ at each step, often using a contrastive or L2 loss.
+The training objective is to minimize the distance between the predicted latent states sₜ and the encoded ground truth representations s′ₜ at each step.
 
 This design allows the model to learn to plan forward purely based on the initial state and a sequence of actions — without relying on access to visual inputs during inference.
 
@@ -82,7 +82,36 @@ There are two reasons we did not use ViT.
 - First, the training set only contains 2.5M data points. According to the ViT paper, they found that ViT can perform better only on large scale of data. On ImageNet which has 1.3M data, its performance is worse than CNN. It starts to outperform CNN under ImageNet-21k which has 14M data. As a result, given 2.5M training data, we don't think ViT can perform better than CNN since CNN has better idea about inductive bias. 
 - Second, modern CNN is not worse than ViT even under large training size. In the paper "A ConvNet for the 2020s", they introduce the ConvNext network which outperform ViT both on ImageNet-1k and ImageNet-22k. Our Encoder is basically based on the ConvNext.
 
+![Encoder](/images/projects/jepa/encoder.jpg)
+*Encoder*
+
+Our encoder is designed to separately process the object and environment channels, allowing the model to better capture the unique structures of each.
+The two channels are first split, and each passes through a point-wise convolution layer (1×1 kernel) that expands the feature dimension from 1 to 16.
+The expanded features are then fed through a series of ConvNeXt blocks, where each block consists of a depthwise convolution with a 7×7 kernel, followed by layer normalization, a point-wise convolution expanding the hidden dimension by a factor of 4, a GELU activation, and another point-wise convolution that projects the dimension back. Residual connections are applied within each block to facilitate information flow.
+
+After passing through all ConvNeXt blocks, an adaptive average pooling layer reduces the spatial resolution to 6×6, and a fully connected layer further projects the flattened features into the target latent dimension. A final layer normalization is applied to each branch.
+The object and environment representations are then element-wise added after normalization to produce the final encoded state.
+
+Initially, we also designed a fusion branch that jointly processed both object and environment inputs through a similar ConvNeXt structure, aiming to model cross-channel interactions more explicitly. However, due to memory limitations on a single A100 GPU, this fusion branch was removed in the final implementation.
+
 ## Predictor
+In this model, the predictor is not responsible for extracting visual features from the input; instead, it performs affine transformations in latent space to model the dynamics between states and actions.
+Given its functional simplicity, we intentionally kept the predictor lightweight and designed it as a two-layer multilayer perceptron (MLP).
+
+![Predictor](/images/projects/jepa/predictor.jpg)
+*Predictor*
+
+The predictor takes two inputs:
+- the current state representation of shape [b, 1, 128]
+- and the action vector of shape [b, 1, 2].
+
+The action is first projected to the same latent dimension (128) via a fully connected layer.
+To prevent either input from dominating, both the state and the action embedding are normalized independently using LayerNorm, and then added element-wise to form a joint representation.
+This sum is passed through a two-layer MLP:
+- The first linear layer expands the feature dimension from 128 to 512, followed by LayerNorm, GELU activation, and another linear layer mapping it back to 128.
+- Finally, a residual connection is applied by adding the original normalized state input to the MLP output, forming the predicted next state.
+
+This simple yet effective design allows the predictor to model complex transitions in latent space without the overhead of convolutional operations.
 
 # Energy Function
 

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>ExploreJEPA, an Energy based JEPA architecture model</title>
-  <meta name='description' content='This project designed and trained an energy based JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the moving ...'>
+  <meta name='description' content='This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajetory of an object in an envi...'>
 
   <link rel="canonical" href="http://localhost:4000/projects/jepa-architecture-environment-probing-model">
   <link rel="alternate" type="application/rss+xml" title="SY" href="/feed.xml">
@@ -15,12 +15,12 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ExploreJEPA, an Energy based JEPA architecture model – SY">
-  <meta name="twitter:description" content="This project designed and trained an energy based JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the moving trend of an object in an environment with wall and door.">
+  <meta name="twitter:description" content="This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajetory of an object in an environment with wall and door. Check the code at https://github.com/shawnyin128/ExploerJEPA_an_environment_probing_model.">
   <meta name="twitter:image:src" content="http://localhost:4000/images/projects/jepa/jepa_cover.png">
 
   <!-- Facebook OpenGraph -->
   <meta property="og:title" content="ExploreJEPA, an Energy based JEPA architecture model – SY">
-  <meta property="og:description" content="This project designed and trained an energy based JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the moving trend of an object in an environment with wall and door.">
+  <meta property="og:description" content="This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajetory of an object in an environment with wall and door. Check the code at https://github.com/shawnyin128/ExploerJEPA_an_environment_probing_model.">
   <meta property="og:image" content="http://localhost:4000/images/projects/jepa/jepa_cover.png">
 
   <!-- Fonts -->
@@ -135,7 +135,7 @@
   <div class="page-head">
     <h1 class="page-title">ExploreJEPA, an Energy based JEPA architecture model</h1>
     
-    <p class="page-description">This project designed and trained an energy based JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the moving trend of an object in an environment with wall and door.</p>
+    <p class="page-description">This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajetory of an object in an environment with wall and door. Check the code at https://github.com/shawnyin128/ExploerJEPA_an_environment_probing_model.</p>
     
     
     <span class="page-label">AI</span>
@@ -149,10 +149,145 @@
   
 
   <div class="page__content">
-    <h1 id="what-is-jepa">What is JEPA</h1>
-<p>Joint Embedding Predictive Architecture, as known as JEPA, is a self-supervised learning approach developed by Yann LeCun in 2022. In LeCun’s paper, A Path Towards Autonomous Machine Intelligence, he believes JEPA is a structure that helps the model to reasoning and plan.</p>
+    <h1 id="task">Task</h1>
+<p>In this project, we aim to build a JEPA-based model to predict the movement of an object in an environment that contains walls and doors. The model needs to learn and reason about the object’s trajectory, as the object can only pass through doors and will be blocked by walls.</p>
 
 <h1 id="why-jepa">Why JEPA</h1>
+<p>Joint Embedding Predictive Architecture (JEPA) is a self-supervised learning approach proposed by Yann LeCun in 2022. In his paper A Path Towards Autonomous Machine Intelligence, LeCun suggests that JEPA can facilitate a model’s ability to reason and plan. <br /></p>
+
+<p>We chose JEPA for this project because — aside from the fact that it is required — during inference, the only available information is the initial state and a series of actions. Thus, the model must have strong planning capabilities to predict future states based solely on this limited input, which JEPA is particularly well-suited to handle.</p>
+
+<h1 id="data-and-data-augmentation">Data and Data Augmentation</h1>
+<p>The training dataset contains 2.5 million data points, and each sample is divided into two parts:</p>
+<ul>
+  <li>Observation Tensor: Shape [B, T, 2, 65, 65]. <br />
+This means there are B trajectories, each trajectory has T time steps, and for each step, there are two 65×65 images representing the object and the environment.
+    <ul>
+      <li>Channel 0: Object image ([1, 65, 65])</li>
+      <li>Channel 1: Environment image ([1, 65, 65])</li>
+    </ul>
+  </li>
+  <li>Action Tensor: Shape [T - 1, 2]. <br />
+After the initial state, each following step is associated with an action represented by a 2-dimensional vector.</li>
+</ul>
+
+<p><img src="/images/projects/jepa/data.png" alt="Training sample" />
+<em>Training sample</em></p>
+
+<p>Although data augmentation is allowed, we chose not to apply it. <br /></p>
+
+<p>For this particular task, we believe that data augmentation would either have no benefit or could even degrade model performance. Here’s a discussion of some commonly considered techniques: <br /></p>
+
+<ul>
+  <li>Random Crop: <br />
+We believe random cropping would be harmful for two reasons:
+    <ul>
+      <li>Given the sparsity of the training images, random cropping could frequently produce empty canvases, heavily skewing the training distribution.</li>
+      <li>Random cropping introduces counter-intuitive supervision. Suppose you crop the initial state and obtain an empty image, but the ground truth for the next step involves walls and an object. Then the model would incorrectly learn that an action can spontaneously generate structures from nothing, which violates physical intuition.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Random Rotation or Translation: <br />
+These could also harm model learning, for a similar reason. <br />
+Suppose you rotate or translate an image, but keep the original action vector unchanged. In this case, the same action would lead to different visual outcomes under different spatial frames, confusing the model and disrupting the learning of consistent motion dynamics.</p>
+  </li>
+  <li>
+    <p>Color Jitter: <br />
+Color jitter would neither hurt nor help significantly. <br />
+Since the images are grayscale, changing brightness or contrast would have minimal impact, and there is little color information for the model to learn from anyway.</p>
+  </li>
+  <li>
+    <p>Noise: <br />
+Adding noise is a tricky choice.
+If the injected noise is very small — so that the object’s and walls’ visual integrity remains intact — it could potentially help regularize the model. <br />
+However, if the noise is strong enough to produce many random grey points, it would confuse the model, possibly leading it to make predictions based on noise artifacts rather than the actual object or environment layout. Or, the model cannot distinguish between noise and object, then it just make prediciton based on the wall and door instead of the object itself.</p>
+  </li>
+  <li>Gaussian Blur: <br />
+Similar to color jitter, Gaussian blur is unlikely to cause harm, but it also probably offers little benefit given the simplicity and sparsity of the task.</li>
+</ul>
+
+<h1 id="model-structure">Model Structure</h1>
+<p>The JEPA architecture used in this task follows an auto-regressive prediction framework, as shown in the diagram below.</p>
+
+<p><img src="/images/projects/jepa/jepa_structure.png" alt="JEPA Architecture" />
+<em>JEPA Architecture</em>
+It involves three neural network components:</p>
+<ul>
+  <li>A predictor network Pred_ϕ</li>
+  <li>Two encoders: Enc_θ for the initial state, and Enc_ψ for target observations.</li>
+</ul>
+
+<p>In our implementation, Enc_θ and Enc_ψ are instantiated as the same network with shared weights, for simplicity — although in general, they can be distinct.</p>
+
+<p>The model operates as follows:</p>
+<ul>
+  <li>The initial observation o₀ is passed through encoder Enc_θ to produce the initial latent state s₀.</li>
+  <li>Then, using the action u₀ and s₀, the predictor Pred_ϕ produces the predicted next latent state s₁.</li>
+  <li>This predicted state s₁ is then used along with action u₁ to predict s₂, and so on — in an auto-regressive manner over time.</li>
+</ul>
+
+<p>In parallel, for each time step:</p>
+<ul>
+  <li>The ground truth observation o₁, o₂, … is encoded by Enc_ψ to generate the target representations s′₁, s′₂, ….</li>
+</ul>
+
+<p>The training objective is to minimize the distance between the predicted latent states sₜ and the encoded ground truth representations s′ₜ at each step.</p>
+
+<p>This design allows the model to learn to plan forward purely based on the initial state and a sequence of actions — without relying on access to visual inputs during inference.</p>
+
+<h2 id="encoder">Encoder</h2>
+<p>The encoder in this task is aimed to extract features from the image. As a result, when design the encoder structure, we need to choose a model that can efficiently work with image. Basically, there are two options, Vision Transformer (ViT) and Convolutional Network (CNN). In our work, we choose CNN.</p>
+
+<p>There are two reasons we did not use ViT.</p>
+<ul>
+  <li>First, the training set only contains 2.5M data points. According to the ViT paper, they found that ViT can perform better only on large scale of data. On ImageNet which has 1.3M data, its performance is worse than CNN. It starts to outperform CNN under ImageNet-21k which has 14M data. As a result, given 2.5M training data, we don’t think ViT can perform better than CNN since CNN has better idea about inductive bias.</li>
+  <li>Second, modern CNN is not worse than ViT even under large training size. In the paper “A ConvNet for the 2020s”, they introduce the ConvNext network which outperform ViT both on ImageNet-1k and ImageNet-22k. Our Encoder is basically based on the ConvNext.</li>
+</ul>
+
+<p><img src="/images/projects/jepa/encoder.jpg" alt="Encoder" />
+<em>Encoder</em></p>
+
+<p>Our encoder is designed to separately process the object and environment channels, allowing the model to better capture the unique structures of each.
+The two channels are first split, and each passes through a point-wise convolution layer (1×1 kernel) that expands the feature dimension from 1 to 16.
+The expanded features are then fed through a series of ConvNeXt blocks, where each block consists of a depthwise convolution with a 7×7 kernel, followed by layer normalization, a point-wise convolution expanding the hidden dimension by a factor of 4, a GELU activation, and another point-wise convolution that projects the dimension back. Residual connections are applied within each block to facilitate information flow.</p>
+
+<p>After passing through all ConvNeXt blocks, an adaptive average pooling layer reduces the spatial resolution to 6×6, and a fully connected layer further projects the flattened features into the target latent dimension. A final layer normalization is applied to each branch.
+The object and environment representations are then element-wise added after normalization to produce the final encoded state.</p>
+
+<p>Initially, we also designed a fusion branch that jointly processed both object and environment inputs through a similar ConvNeXt structure, aiming to model cross-channel interactions more explicitly. However, due to memory limitations on a single A100 GPU, this fusion branch was removed in the final implementation.</p>
+
+<h2 id="predictor">Predictor</h2>
+<p>In this model, the predictor is not responsible for extracting visual features from the input; instead, it performs affine transformations in latent space to model the dynamics between states and actions.
+Given its functional simplicity, we intentionally kept the predictor lightweight and designed it as a two-layer multilayer perceptron (MLP).</p>
+
+<p><img src="/images/projects/jepa/predictor.jpg" alt="Predictor" />
+<em>Predictor</em></p>
+
+<p>The predictor takes two inputs:</p>
+<ul>
+  <li>the current state representation of shape [b, 1, 128]</li>
+  <li>and the action vector of shape [b, 1, 2].</li>
+</ul>
+
+<p>The action is first projected to the same latent dimension (128) via a fully connected layer.
+To prevent either input from dominating, both the state and the action embedding are normalized independently using LayerNorm, and then added element-wise to form a joint representation.
+This sum is passed through a two-layer MLP:</p>
+<ul>
+  <li>The first linear layer expands the feature dimension from 128 to 512, followed by LayerNorm, GELU activation, and another linear layer mapping it back to 128.</li>
+  <li>Finally, a residual connection is applied by adding the original normalized state input to the MLP output, forming the predicted next state.</li>
+</ul>
+
+<p>This simple yet effective design allows the predictor to model complex transitions in latent space without the overhead of convolutional operations.</p>
+
+<h1 id="energy-function">Energy Function</h1>
+
+<h1 id="train-and-result">Train and Result</h1>
+
+<h1 id="reference">Reference</h1>
+<p>[1] LeCun, Yann. “A path towards autonomous machine intelligence version 0.9. 2, 2022-06-27.” Open Review 62.1 (2022): 1-62. <a href="https://openreview.net/pdf?id=BZ5a1r-kVsf">OpenReview</a> <br />
+[2] Project Requirement Repo. <a href="https://github.com/alexnwang/DL25SP-Final-Project?tab=readme-ov-file">Github</a> <br />
+[3] Dosovitskiy, Alexey, et al. “An image is worth 16x16 words: Transformers for image recognition at scale.” arXiv preprint arXiv:2010.11929 (2020). <a href="https://arxiv.org/pdf/2010.11929">arXiv:2010.11929</a> <br />
+[4] Liu, Zhuang, et al. “A convnet for the 2020s.” Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. 2022. <a href="https://arxiv.org/pdf/2201.03545">arXiv:2201.03545</a></p>
 
 
   </div>
@@ -171,7 +306,7 @@
         title="Share on Facebook" rel="nofollow"><i class="fa-brands fa-facebook"></i></a>
     </li>
     <li class="share__item">
-      <a class="share__link share__linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/projects/jepa-architecture-environment-probing-model&title=ExploreJEPA,%20an%20Energy%20based%20JEPA%20architecture%20model&summary=This%20project%20designed%20and%20trained%20an%20energy%20based%20JEPA%20architecture%20model%20with%20CNN%20and%20MLPs%20as%20encoder%20and%20predictor.%20The%20main%20task%20is%20to%20predict%20the%20moving%20trend%20of%20an%20object%20in%20an%20environment%20with%20wall%20and%20door.&source="
+      <a class="share__link share__linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/projects/jepa-architecture-environment-probing-model&title=ExploreJEPA,%20an%20Energy%20based%20JEPA%20architecture%20model&summary=This%20project%20designed%20a%20JEPA%20architecture%20model%20with%20CNN%20and%20MLPs%20as%20encoder%20and%20predictor.%20The%20main%20task%20is%20to%20predict%20the%20trajetory%20of%20an%20object%20in%20an%20environment%20with%20wall%20and%20door.%20Check%20the%20code%20at%20https://github.com/shawnyin128/ExploerJEPA_an_environment_probing_model.&source="
       onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn" rel="nofollow"><i class="fa-brands fa-linkedin"></i></a>
     </li>
     <li class="share__item">
