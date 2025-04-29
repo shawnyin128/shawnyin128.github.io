@@ -47,7 +47,7 @@ Since the images are grayscale, changing brightness or contrast would have minim
 - Noise: <br>
 Adding noise is a tricky choice.
 If the injected noise is very small — so that the object’s and walls’ visual integrity remains intact — it could potentially help regularize the model. <br>
-However, if the noise is strong enough to produce many random grey points, it would confuse the model, possibly leading it to make predictions based on noise artifacts rather than the actual object or environment layout.
+However, if the noise is strong enough to produce many random grey points, it would confuse the model, possibly leading it to make predictions based on noise artifacts rather than the actual object or environment layout. Or, the model cannot distinguish between noise and object, then it just make prediciton based on the wall and door instead of the object itself.
 
 - Gaussian Blur: <br>
 Similar to color jitter, Gaussian blur is unlikely to cause harm, but it also probably offers little benefit given the simplicity and sparsity of the task.
