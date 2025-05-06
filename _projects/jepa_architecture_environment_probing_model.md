@@ -90,7 +90,7 @@ The two channels are first split, and each passes through a point-wise convoluti
 The expanded features are then fed through a series of ConvNeXt blocks, where each block consists of a depthwise convolution with a 7×7 kernel, followed by layer normalization, a point-wise convolution expanding the hidden dimension by a factor of 4, a GELU activation, and another point-wise convolution that projects the dimension back. Residual connections are applied within each block to facilitate information flow.
 
 After passing through all ConvNeXt blocks, an adaptive average pooling layer reduces the spatial resolution to 6×6, and a fully connected layer further projects the flattened features into the target latent dimension. A final layer normalization is applied to each branch.
-The object and environment representations are then element-wise added after normalization to produce the final encoded state.
+The object and environment representations are then element-wise added after normalization to produce the final encoded state. The layer normalization before addition actually improves the model's performance on distinguishing wall. Before applying layer norm, our loss for wall is 4 times higher than loss for object. With the normalization, the wall's loss becomer smaller and is about 2 times higher comparing with object loss.
 
 Initially, we also designed a fusion branch that jointly processed both object and environment inputs through a similar ConvNeXt structure, aiming to model cross-channel interactions more explicitly. However, due to memory limitations on a single A100 GPU, this fusion branch was removed in the final implementation.
 
@@ -114,12 +114,84 @@ This sum is passed through a two-layer MLP:
 This simple yet effective design allows the predictor to model complex transitions in latent space without the overhead of convolutional operations.
 
 # Energy Function
+## What is Collapse and how to avoid
+Collapse is a common issue encountered in JEPA models. When collapse occurs, the generated representations become useless and fail to capture any meaningful information about the input.
+Why does this happen in self-supervised learning models like JEPA? 
 
-# Train and Result
+The root cause lies in the lack of explicit labels: the model only attempts to align two outputs — one from the predictor and one from the encoder — without external supervision.
+A trivial solution the model might find is to learn invariance among training samples, where both the predictor and the encoder produce nearly constant outputs regardless of the input.
+From an energy-based model perspective, collapse corresponds to a poorly shaped energy surface, where low-energy points are fixed and uniform across different inputs.
+
+There are several strategies to mitigate collapse. Some are well-understood theoretically, while others are empirically effective but less fully explained.
+In this blog, we focus on two major approaches: contrastive learning and regularization-based methods.
+
+### Contrastive Method
+Contrastive methods address collapse by explicitly shaping the energy landscape:
+- Correct pairs (i.e., matching predicted and encoded representations) are encouraged to have low energy.
+- Incorrect pairs (i.e., mismatched states) are pushed to have high energy.
+
+In our case, the idea would be to design a loss function that makes the predicted state and the corresponding encoded state as close as possible, while pushing apart predicted states and encoded states from unrelated steps.
+
+Ideally, the energy landscape should have sharp wells at correct pairs (low energy) and high energy elsewhere.
+
+However, in practice, contrastive methods require a large number of negative samples to adequately shape the energy surface. Since the input space is effectively infinite, 
+it is infeasible to cover all possible incorrect pairs. Unseen negatives may still lie in low-energy regions, potentially degrading model performance.
+
+Because of this heavy sampling requirement, we did not adopt contrastive methods for this project.
+
+### Regularization Method
+Instead, we use a regularization-based strategy.
+
+The intuition is that collapse happens when the output space shrinks — representations gradually contract toward a few points or even a single point.
+To counteract this, regularization methods introduce forces that encourage diversity and prevent the collapse of the output space.
+
+By explicitly penalizing overly simple or low-variance outputs, regularization acts as a balancing force, maintaining a rich, structured latent space even without contrastive negatives.
+
+This approach is simpler to implement and avoids the heavy sampling burden of contrastive methods, making it more practical for our setup.
+
+## VIC Regularization
+VIC regularization is an idea to combine invariance, covariance and covariance [5]. The basic idea is same as the previous section, that we want the model's output to represent different information. 
+
+# Train
+## Training Strategy and Resource Constraints
+
+Due to limited computational resources—particularly GPU availability—we trained our JEPA model for 35 epochs with a batch size of 128. The model appeared to converge around the 30th epoch. From our current perspective, and when comparing against the general loss performance of other teams, we believe the model has reached a performance bottleneck largely due to insufficient generalization capacity.
+
+## Training Configuration
+
+We adopted a stage-wise training strategy. For the invariance loss, we used Mean Squared Error (MSE) as defined in the VIC framework. Optimization was performed using Adam with weight decay, and a cosine learning rate scheduler was applied to stabilize training in the later stages.
+
+The training was split into two phases:
+- In the first 30 epochs, the primary objective was to prevent representation collapse. During this phase, the variance loss was weighted more heavily than the invariance loss.
+- In the final 5 epochs, we increased the weight of the invariance term to encourage the model to focus more on improving prediction performance.
+
+# Result
+The results are encouraging: my model ranked 8th out of 30 teams. In terms of training loss, its performance is nearly on par with the 4th to 7th ranked models, with only marginal differences.
+
+What’s more notable is the model’s efficiency—mine contains only 290K parameters, which is 10 to 20 times fewer than those ranked above it. This demonstrates a strong trade-off between performance and model complexity, highlighting the effectiveness of lightweight design under resource constraints.
+
+# Potentail Improvement
+Based on the final performance of all top 10 models, our approach performs comparably—if not slightly better—than the 4th to 7th ranked models on simple test cases. However, our model exhibits relatively high training loss and struggles with complex or extreme motion trajectories. This strongly suggests a need to enhance its generalization capability.
+
+A straightforward way to address this is to increase model capacity, such as doubling the number of ConvNeXt layers and expanding the hidden dimension. Given our current parameter count (290K), even with such scaling, the model would likely remain the most compact among the top 10.
+
+Another potential improvement is to decouple the decoders for moving objects and static structures (walls). In most scenarios, only the object moves while the wall remains fixed. This opens up the possibility of encoding the wall once using a dedicated wall encoder, then reusing its representation across all prediction steps. In the current design, the predictor may be unable to distinguish between object and wall features purely based on their numerical representation, which could lead to overly state-driven decisions in later stages.
+
+Additionally, we are considering integrating a DenseNet-style architecture into the predictor. By concatenating previous outputs with the current input—possibly with decaying weights based on temporal distance—the model may better capture long-term dependencies. This would allow it to condition future predictions not only on the most recent state but on the full sequence of past predictions, potentially improving accuracy for complex trajectories.
+
+# One More Thing
+During the final presentation on May 5th, I gained several valuable insights from the winning team’s approach that are worth highlighting.
+
+The winner’s model stood out by relying heavily on deterministic feature extraction methods. Rather than learning every representation end-to-end, they used algorithmic components to encode the input more directly (but also with neural network somewhere in the encoder, otherwise it will not be a JEPA model). As a result, their model achieved the best performance among all teams with only 20K parameters—a remarkable feat. This underscores an important lesson for data scientists and machine learning engineers: sometimes, simplicity and domain knowledge can outperform complex models. When possible, incorporating deterministic logic can make models both lighter and more interpretable.
+
+Regarding representation collapse, the presenter shared an interesting insight: removing bias terms from layers may help mitigate collapse. This makes intuitive sense—bias terms can enable the model to converge to trivial solutions by zeroing out weights and relying on constant biases. Without bias, the model is more constrained and less likely to “cheat” by collapsing to a degenerate solution.
+
+Additionally, Yann noted that the use of softargmax (often referred to as softmax) in the winner’s architecture helped prevent collapse. By treating the prediction task as a form of classification, the model could leverage contrastive learning dynamics, which naturally promote diversity in representations and reduce the risk of collapse.
 
 # Reference
 [1] LeCun, Yann. "A path towards autonomous machine intelligence version 0.9. 2, 2022-06-27." Open Review 62.1 (2022): 1-62. [OpenReview](https://openreview.net/pdf?id=BZ5a1r-kVsf) <br>
 [2] Project Requirement Repo. [Github](https://github.com/alexnwang/DL25SP-Final-Project?tab=readme-ov-file) <br>
 [3] Dosovitskiy, Alexey, et al. "An image is worth 16x16 words: Transformers for image recognition at scale." arXiv preprint arXiv:2010.11929 (2020). [arXiv:2010.11929](https://arxiv.org/pdf/2010.11929) <br>
-[4] Liu, Zhuang, et al. "A convnet for the 2020s." Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. 2022. [arXiv:2201.03545](https://arxiv.org/pdf/2201.03545)
+[4] Liu, Zhuang, et al. "A convnet for the 2020s." Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. 2022. [arXiv:2201.03545](https://arxiv.org/pdf/2201.03545) <br>
+[5] Bardes, Adrien, Jean Ponce, and Yann LeCun. "Vicreg: Variance-invariance-covariance regularization for self-supervised learning." arXiv preprint arXiv:2105.04906 (2021). [arXiv:2105.04906](https://arxiv.org/pdf/2105.04906)
 
