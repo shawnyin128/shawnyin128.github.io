@@ -166,7 +166,7 @@ The training was split into two phases:
 - In the final 5 epochs, we increased the weight of the invariance term to encourage the model to focus more on improving prediction performance.
 
 # Result
-The results are encouraging: my model ranked 8th out of 30 teams. In terms of training loss, its performance is nearly on par with the 4th to 7th ranked models, with only marginal differences.
+The results are encouraging: my model ranked 8th out of 30 teams. In terms of training loss, its overall performance is nearly on par with the 4th to 7th ranked models, with only marginal differences.
 
 What’s more notable is the model’s efficiency—mine contains only 290K parameters, which is 10 to 20 times fewer than those ranked above it. This demonstrates a strong trade-off between performance and model complexity, highlighting the effectiveness of lightweight design under resource constraints.
 
