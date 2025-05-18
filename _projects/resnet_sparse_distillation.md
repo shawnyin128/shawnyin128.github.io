@@ -119,6 +119,7 @@ For activation pruning, we used a similar evaluation approach. Since activation 
 *Activation Pruning Performance*
 
 Additionally, in the 1% and 5% accuracy drop scenarios, the FLOPs of the distilled models were reduced by 4 to 5 times.
+
 |               | FLOPs 1% Acc Drop | FLOPs 5% Acc Drop |
 |---------------|-------------------|-------------------|
 | ResNet18_b    | 2,145,699         | 652,083           |
