@@ -4,7 +4,7 @@ title: 📝 Publications
 description: Research is formalized curiosity.
 permalink: /publications/
 image: 
-page_cover: '/images/header/about_cover.jpg'
+page_cover: '/images/header/pub_cover.jpg'
 ---
 
 ## **2025**
