@@ -116,3 +116,78 @@
 ======================= */
 /* >>>>>>>>>>>>>> :: 4.1-Page + Post <<<<<<<<<<<<<<< */
 @import '4-layouts/page';
+
+
+// about me css
+.cv-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  column-gap: 1.25rem;
+  row-gap: 0.5rem;
+  margin: 0;
+}
+.cv-grid dt {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim, #666);
+  white-space: nowrap;
+}
+.cv-grid dd {
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .cv-grid { grid-template-columns: 1fr; }
+  .cv-grid dt { text-align: left; white-space: normal; }
+}
+
+// publication
+.publications-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.publication-card {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.5rem;
+  box-shadow: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.publication-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.publication-title {
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.9);
+  //line-height: 1.4;
+  //margin-bottom: 0.25rem;
+}
+
+.publication-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.publication-title a:hover {
+  text-decoration: underline;
+  color: #007acc;
+}
+
+.publication-authors {
+  font-size: 1.0rem;
+  //color: #555;
+  //margin-bottom: 0.25rem;
+}
+
+.publication-conference {
+  font-size: 0.9rem;
+  color: #888;
+}
