@@ -60,15 +60,15 @@ projects_settings:
 #-------------------------------
 # Testimonials Settings
 testimonials:
-  enable: false
-  testimonials_title: Testimonials
+  enable: true
+  testimonials_title: News
   testimonials_description:
 
 testimonial_items:
-  - name: "Albert Flores"
-    image: "/images/client-1.jpg"
-    designation: "Data Scientist"
-    content : "The incredible attention to detail displayed by this team is commendable. Every aspect of our project, no matter how small, was handled with precision and care. The result is a product that reflects their commitment to excellence."
+  - name: "Sep 2025"
+    content: "My paper about Codebook-based LLM Quantization has been submitted to ICLR 2026!"
+  - name: "May 2025"
+    content : "I'm excited to be a part of the AI research team at NYU SAI Lab!"
 
 
 #-------------------------------
@@ -76,7 +76,7 @@ testimonial_items:
 blog_settings:
   enable: true
   blog_title: Blog
-  blog_description: 
+  blog_description:
 
 
 #-------------------------------
