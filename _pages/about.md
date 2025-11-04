@@ -24,8 +24,9 @@ page_cover: '/images/header/about_cover.jpg'
 
 <dt>Sep 2016 – May 2020</dt>
 <dd>
-<strong>China Agricultural University</strong>, Internaltional College Beijing<br>
+<strong>China Agricultural University</strong>, International College Beijing<br>
 <em>B.A. in Economics, Minor in Mathematics</em><br>
+<em>Joint Program with University of Colorado, Denver</em><br>
 <em>Degree Honor with Distinction, Major Honor with Cum Laude</em>
 </dd>
 </dl><br>
