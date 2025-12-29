@@ -94,7 +94,17 @@ page_cover: '/images/header/about_cover.jpg'
 <strong>China Agricultural University Outstanding Graduates</strong>, China Agricultural University<br>
 </dd>
 
+<dt>May 2019</dt>
+<dd>
+<strong>Dean’s List</strong>, China Agricultural University<br>
+</dd>
+
 <dt>Dec 2018</dt>
+<dd>
+<strong>Dean’s List</strong>, China Agricultural University<br>
+</dd>
+
+<dt>Dec 2017</dt>
 <dd>
 <strong>Dean’s List</strong>, China Agricultural University<br>
 </dd>
