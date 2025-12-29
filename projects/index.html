@@ -5,7 +5,158 @@ description: An ounce of Action is worth a ton of Theory.
 page_cover: '/images/header/project_cover.jpg'
 ---
 
-<!-- begin page -->
+<style>
+  :root {
+    --tag-bg: transparent;
+    --tag-border: #e0e0e0;
+    --tag-text: #666666;
+    --tag-hover-bg: rgba(0,0,0,0.03);
+
+    --btn-active-bg: #111;
+    --btn-active-text: #fff;
+    --btn-active-border: #111;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --tag-border: #444444;
+      --tag-text: #b0b0b0;
+      --tag-hover-bg: rgba(255,255,255,0.05);
+
+      --btn-active-bg: #fff;
+      --btn-active-text: #000;
+      --btn-active-border: #fff;
+    }
+  }
+
+  [data-theme="dark"] :root, body.dark :root {
+    --tag-border: #444444;
+    --tag-text: #b0b0b0;
+    --tag-hover-bg: rgba(255,255,255,0.05);
+    --btn-active-bg: #fff;
+    --btn-active-text: #000;
+    --btn-active-border: #fff;
+  }
+
+  .filter-wrapper {
+    margin-bottom: 30px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .filter-title {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--tag-text);
+  }
+
+  .filter-buttons {
+    display: grid;
+    grid-template-rows: repeat(2, min-content);
+    grid-auto-flow: column;
+    gap: 10px;
+    padding: 4px;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-buttons::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    display: block;
+    background: transparent;
+    border: 1px solid var(--tag-border);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--tag-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: #888;
+    background-color: var(--tag-hover-bg);
+  }
+
+  .filter-btn.active {
+    background: var(--tag-text);
+    color: #fff;
+    border-color: var(--tag-text);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .filter-btn.active {
+      background: #eee;
+      color: #000;
+      border-color: #eee;
+    }
+  }
+
+  .filter-btn.hidden {
+    display: none;
+  }
+
+  .project-card-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--tag-text);
+    background: transparent;
+    border: 1px solid var(--tag-border);
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    vertical-align: middle;
+    opacity: 0.85;
+  }
+
+  .project-tags-scroll-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    margin-top: 12px;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    max-width: 100%;
+  }
+
+  .project-tags-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-card-tag {
+    display: inline-block;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--tag-text);
+    background: transparent;
+    border: 1px solid var(--tag-border);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+</style>
+
 <div class="page container">
 
   <div class="page-head">
@@ -15,17 +166,77 @@ page_cover: '/images/header/project_cover.jpg'
     {% endif %}
   </div>
 
+  <div class="filter-wrapper">
+    <div class="filter-title"><strong>Filter by Topic</strong></div>
+
+    <div class="filter-buttons" id="filterContainer">
+
+      {% assign raw_tags = "" %}
+      {% for project in site.projects %}
+      {% if project.label %}
+      {% if project.label.first %}
+      {% assign t = project.label | join: ',' %}
+      {% assign raw_tags = raw_tags | append: "," | append: t %}
+      {% else %}
+      {% assign raw_tags = raw_tags | append: "," | append: project.label %}
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+
+      {% assign tags = raw_tags | split: "," | uniq | sort_natural %}
+
+      {% for tag in tags %}
+      {% assign clean_tag = tag | strip %}
+      {% if clean_tag != "" %}
+      <button class="filter-btn"
+              onclick="toggleFilter(this, '{{ clean_tag }}')"
+              data-tag="{{ clean_tag }}">
+        {{ clean_tag }}
+      </button>
+      {% endif %}
+      {% endfor %}
+
+    </div>
+  </div>
+
   <div class="page__projects">
     <div class="row">
       {% for project in site.projects reversed %}
-      <article class="project col col-6 col-t-12 animate">
+
+      {% assign project_tags = "" %}
+      {% if project.label.first %}
+      {% assign project_tags = project.label | join: ',' %}
+      {% else %}
+      {% assign project_tags = project.label %}
+      {% endif %}
+
+      <article class="project col col-6 col-t-12 animate project-item" data-tags="{{ project_tags }}">
         <div class="project__content">
           <div class="project__info">
+
             <h3 class="project__title"><a href="{{ project.url | relative_url }}">{{ project.title }}</a></h3>
+
             {% if project.description %}
             <div class="project__description">{{ project.description }}</div>
             {% endif %}
+
+            {% if project.label %}
+            <div class="project-tags-scroll-wrapper">
+              {% if project.label.first %}
+              {% for tag in project.label %}
+              <span class="project-card-tag">{{ tag }}</span>
+              {% endfor %}
+              {% else %}
+              {% assign tags = project.label | split: ',' %}
+              {% for tag in tags %}
+              <span class="project-card-tag">{{ tag }}</span>
+              {% endfor %}
+              {% endif %}
+            </div>
+            {% endif %}
+
           </div>
+
           {% if project.image %}
           <a href="{{ project.url | relative_url }}" class="project__image">
             <img class="lazy" data-src="{{ project.image | relative_url }}" alt="{{ project.title }}">
@@ -38,4 +249,52 @@ page_cover: '/images/header/project_cover.jpg'
   </div>
 
 </div>
-<!-- end page -->
+<script>
+  let currentActiveTag = null;
+
+  function toggleFilter(btn, tag) {
+    const allBtns = document.querySelectorAll('.filter-btn');
+    const allProjects = document.querySelectorAll('.project-item');
+
+    if (currentActiveTag === tag) {
+      currentActiveTag = null;
+
+      allBtns.forEach(b => {
+        b.classList.remove('hidden');
+        b.classList.remove('active');
+      });
+
+      allProjects.forEach(p => {
+        p.style.display = 'block';
+        p.style.opacity = '1';
+      });
+
+    }
+    else {
+      currentActiveTag = tag;
+
+      allBtns.forEach(b => {
+        if (b === btn) {
+          b.classList.remove('hidden');
+          b.classList.add('active');
+        } else {
+          b.classList.add('hidden');
+          b.classList.remove('active');
+        }
+      });
+
+      allProjects.forEach(p => {
+        const pTags = p.getAttribute('data-tags');
+        const tagArray = pTags.split(',').map(t => t.trim());
+
+        if (tagArray.includes(tag)) {
+          p.style.display = 'block';
+          p.style.opacity = '1';
+        } else {
+          p.style.display = 'none';
+          p.style.opacity = '0';
+        }
+      });
+    }
+  }
+</script>

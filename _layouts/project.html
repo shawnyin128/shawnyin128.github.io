@@ -10,9 +10,23 @@ layout: default
     {% if page.description %}
     <p class="page-description">{{ page.description }}</p>
     {% endif %}
+    <!--{% if page.label %}-->
+    <!--<span class="page-label">{{ page.label }}</span>-->
     {% if page.label %}
-    <span class="page-label">{{ page.label }}</span>
+    <div class="page-labels-wrapper" style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px;">
+      {% if page.label.first %}
+      {% for tag in page.label %}
+      <span class="page-label">{{ tag }}</span>
+      {% endfor %}
+      {% else %}
+      {% assign tags = page.label | split: ',' %}
+      {% for tag in tags %}
+      <span class="page-label">{{ tag }}</span>
+      {% endfor %}
+      {% endif %}
+    </div>
     {% endif %}
+    <!--{% endif %}-->
   </div>
 
   {% if page.image %}

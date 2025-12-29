@@ -2,7 +2,7 @@
 title: ResNet Sparse Distillation
 date: 2025-05-17 21:21:00
 description: The increasing depth and width of neural networks improve accuracy but also raise hardware requirements and slow down inference. This project proposes a distillation loss function that enables immediate weight and activation pruning on the student model after distillation.
-label: AI
+label: "Course Project, CNN, Efficient, Pruning"
 image: '/images/projects/sparse_distillation/cover.png'
 page_cover: 
 ---

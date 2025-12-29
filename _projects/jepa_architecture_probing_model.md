@@ -1,8 +1,8 @@
 ---
 title: JEPA Architecture Probing Model
 date: 2025-04-27 22:06:35
-description: This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajetory of an object in an environment with wall and door. Check the code at https://github.com/shawnyin128/ExploerJEPA_an_environment_probing_model.
-label: AI
+description: This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajectory of an object in an environment with wall and door.
+label: "Course Project, World Model, CNN"
 image: '/images/projects/jepa/jepa_cover.png'
 page_cover: 
 ---
@@ -53,7 +53,7 @@ However, if the noise is strong enough to produce many random grey points, it wo
 Similar to color jitter, Gaussian blur is unlikely to cause harm, but it also probably offers little benefit given the simplicity and sparsity of the task.
 
 # Model Structure
-The JEPA architecture used in this task follows an auto-regressive prediction framework, as shown in the diagram below.
+The JEPA architecture used in this task follows an autoregressive prediction framework, as shown in the diagram below.
 
 ![JEPA Architecture](/images/projects/jepa/jepa_structure.png)
 *JEPA Architecture*

@@ -13,7 +13,7 @@ page_cover: '/images/header/pub_cover.jpg'
   <div class="publication-card">
     <div class="publication-title">
       <a href="">
-        CodeQuant: Unified Clustering and Quantization for Enhanced Outlier Smoothing in Low-Precision Mixture-of-Experts
+        <strong>CodeQuant: Unified Clustering and Quantization for Enhanced Outlier Smoothing in Low-Precision Mixture-of-Experts</strong>
       </a>
     </div>
     <div class="publication-authors">

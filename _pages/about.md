@@ -43,6 +43,11 @@ page_cover: '/images/header/about_cover.jpg'
 <strong>Research Assistant</strong>, <a href="https://saiqianzhang.com/Lab/" target="_blank">SAI Lab</a>, New York University, USA<br>
 </dd>
 
+<dt>Oct 2020 – Apr 2021</dt>
+<dd>
+<strong>Research Assistant</strong>, GAI Lab, Shandong University, China<br>
+</dd>
+
 <dt>Sep 2019 – May 2020</dt>
 <dd>
 <strong>Teaching Assistant</strong>, China Agricultural University, China<br>

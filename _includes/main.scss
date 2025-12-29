@@ -142,52 +142,112 @@
 }
 
 // publication
+/* =========================
+   Publications Layout
+   ========================= */
+
 .publications-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;               /* 卡片之间更松 */
   margin-top: 2rem;
 }
+
+
+/* =========================
+   Publication Card
+   ========================= */
 
 .publication-card {
   background: transparent;
   border: none;
-  border-radius: 6px;
-  padding: 0.5rem 0.5rem;
+  border-radius: 10px;
+  padding: 0.85rem 0.85rem;     /* 内容区更松一点 */
   box-shadow: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          background-color 0.18s ease;
 }
 
-.publication-card:hover {
+/* Light hover */
+.scheme--light .publication-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background-color: rgba(0, 0, 0, 0.025);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
 }
+
+/* Dark hover */
+.scheme--dark .publication-card:hover {
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+}
+
+
+/* =========================
+   Text Rhythm (关键：别挤在一起)
+   ========================= */
 
 .publication-title {
   font-weight: 600;
-  //font-size: 1.05rem;
-  color: #fff;
-  //line-height: 1.4;
-  //margin-bottom: 0.25rem;
+  line-height: 1.5;
+  margin-bottom: 0.35rem;       /* title -> authors 拉开 */
 }
+
+.publication-authors {
+  line-height: 1.55;
+  margin-bottom: 0.25rem;       /* authors -> venue 拉开 */
+}
+
+.publication-conference {
+  line-height: 1.45;
+  font-style: italic;
+}
+
+
+/* =========================
+   Color Hierarchy (渐变层级)
+   ========================= */
+
+/* 手动模式：light */
+.scheme--light .publication-title { color: #101214; }
+.scheme--light .publication-authors { color: #3f444a; }
+.scheme--light .publication-conference { color: #6a717a; }
+
+/* 手动模式：dark */
+.scheme--dark .publication-title { color: #f3f4f6; }
+.scheme--dark .publication-authors { color: #c7cbd1; }
+.scheme--dark .publication-conference { color: #9aa3ad; }
+
+/* auto 模式：跟随系统主题 */
+@media (prefers-color-scheme: dark) {
+  .scheme--toggle .publication-title { color: #f3f4f6; }
+  .scheme--toggle .publication-authors { color: #c7cbd1; }
+  .scheme--toggle .publication-conference { color: #9aa3ad; }
+}
+
+@media (prefers-color-scheme: light) {
+  .scheme--toggle .publication-title { color: #101214; }
+  .scheme--toggle .publication-authors { color: #3f444a; }
+  .scheme--toggle .publication-conference { color: #6a717a; }
+}
+
+
+/* =========================
+   Links
+   ========================= */
 
 .publication-title a {
   color: inherit;
   text-decoration: none;
 }
 
-.publication-title a:hover {
-  //text-decoration: underline;
-  color: #007acc;
+/* Hover: Light / Dark 各用一个更和谐的蓝 */
+.scheme--light .publication-title a:hover {
+  color: #0b63a8;
 }
 
-.publication-authors {
-  //font-size: 0.9rem;
-  //color: #555;
-  //margin-bottom: 0.25rem;
-}
-
-.publication-conference {
-  //font-size: 0.85rem;
-  color: #888;
+.scheme--dark .publication-title a:hover {
+  color: #6bb6ff;
 }

@@ -1,8 +1,8 @@
 #-------------------------------
 # Site Settings
-title: SY
+title: Shawn's Lab
 description: 
-color_scheme: dark # You have the option to choose between three modes: auto, light, and dark. The default mode is set to auto, which means that the color scheme will automatically adapt based on your operating system settings. This way, you can enjoy a personalized experience without having to manually switch between light and dark modes.
+color_scheme: auto # You have the option to choose between three modes: auto, light, and dark. The default mode is set to auto, which means that the color scheme will automatically adapt based on your operating system settings. This way, you can enjoy a personalized experience without having to manually switch between light and dark modes.
 
 
 #-------------------------------
@@ -32,8 +32,8 @@ menu_settings:
       url: '/projects/'
     - title: '✍️ Blog'
       url: '/blog/'
-    - title: '📷 Gallery'
-      url: '/gallery/'
+    # - title: '📷 Gallery'
+    #   url: '/gallery/'
     # - title: '🎬 Videos'
     #   url: '/videos/'
 
@@ -42,9 +42,9 @@ menu_settings:
 # Author Settings
 author:
   author_name: Shawn Yin
-  author_role: Software Developer
+  author_role: AI Researcher & Master's Student
   author_bio: Hi there! I’m a Master’s student 👨‍🎓 in Computer Science at NYU Courant, specializing in Artificial Intelligence 🤖. Prior to this, I earned my Master’s in Financial Engineering 📈 from NYU Tandon. I have industry experience as a Software Engineer and Big Data Engineer 💻. Currently, my passion lies in AI research. Always excited to dive into cutting-edge tech, data-driven insights, and innovative AI solutions! 🚀
-  author_avatar: '/images/avatar/a1.jpg'
+  author_avatar: '/images/avatar/a2.JPG'
   # cta_button_text: Get In Touch
   # cta_button_link: '/contact/'
 
@@ -90,7 +90,7 @@ videos_settings:
 #-------------------------------
 # Gallery Section
 gallery_settings:
-  enable: true
+  enable: false
   gallery_title: Gallery
   gallery_description: 
 
@@ -109,17 +109,18 @@ mailchimp_settings:
 #-------------------------------
 # Social Icons Settings
 social:
+- { icon: "fa-brands fa-github", name: "Github", link: "https://github.com/shawnyin128" }
+- { icon: "fa-brands fa-linkedin", name: "LinkedIn", link: "https://www.linkedin.com/in/yxyoung128/" }
 # - {icon: "fa-brands fa-facebook", name: "Facebook", link: "https://facebook.com"}
 # - {icon: "fa-brands fa-x-twitter", name: "Twitter", link: "https://twitter.com"}
-- {icon: "fa-brands fa-github", name: "Github", link: "https://github.com/shawnyin128"}
-- {icon: "fa-brands fa-instagram", name: "Instagram", link: "https://www.instagram.com/shawnyin128/"}
+#- {icon: "fa-brands fa-instagram", name: "Instagram", link: "https://www.instagram.com/shawnyin128/"}
 # - {icon: "fa-brands fa-tiktok", name: "Tiktok", link: "https://tiktok.com"}
 # - {icon: "fa-brands fa-youtube", name: "Youtube", link: "https://youtube.com"}
 # - {icon: "fa-brands fa-pinterest", name: "Pinterest", link: "https://pinterest.com"}
 # - {icon: "fa-brands fa-dribbble", name: "Dribbble", link: "https://dribbble.com"}
 # - {icon: "fa-brands fa-microsoft", name: "Microsoft", link: "https://microsoft.com"}
 # - {icon: "fa-brands fa-vimeo-v", name: "Vimeo", link: "https://vimeo.com"}
-- {icon: "fa-brands fa-linkedin", name: "LinkedIn", link: "https://www.linkedin.com/in/yxyoung128/"}
+
 
 # Example of adding a new link to the footer - {icon: "fa-brands fa-dribbble", name: "Dribbble" link: "https://dribbble.com"}
 # Other icons can be found at https://fontawesome.com/search?o=r&m=free
