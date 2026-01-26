@@ -20,7 +20,7 @@ page_cover: '/images/header/pub_cover.jpg'
       <strong>Xiangyang Yin</strong>, Xingyu Liu, Tianhua Xia, BO BAO, Vithursan Thangarasa, Valavan Manohararajah, Eric Sather, Sai Qian Zhang
     </div>
     <div class="publication-conference">
-      International Conference on Learning Representations (ICLR), 2026 (Under Review)
+      International Conference on Learning Representations (ICLR), 2026
     </div>
   </div>
 

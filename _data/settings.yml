@@ -65,8 +65,8 @@ testimonials:
   testimonials_description:
 
 testimonial_items:
-  - name: "Sep 2025"
-    content: "My paper about Codebook-based LLM Quantization has been submitted to ICLR 2026!"
+  - name: "Jan 2026"
+    content: "My paper CodeQuant has been accepted by ICLR 2026!"
   - name: "May 2025"
     content : "I'm excited to be a part of the AI research team at NYU SAI Lab!"
 
