@@ -26,7 +26,7 @@ Research Focus: AI Efficiency (Algorithm, Hardware, System); Representation Lear
 <dt>Sep 2021 – May 2023</dt>
 <dd>
 <strong>New York University</strong>, <a href="https://engineering.nyu.edu/" target="_blank">Tandon School of Engineering</a><br>
-<em>M.S. in Financial Engineering</em>
+<em>M.S. in Financial Engineering (Fintech Software Focus)</em>
 </dd>
 
 <dt>Sep 2016 – May 2020</dt>
