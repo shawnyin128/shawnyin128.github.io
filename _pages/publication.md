@@ -12,7 +12,7 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card">
 <div class="publication-title">
-  <a href="">
+  <a href="https://openreview.net/forum?id=CRgWv0kWjF">
     <strong>DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution</strong>
   </a>
 </div>
@@ -26,7 +26,7 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card">
 <div class="publication-title">
-  <a href="">
+  <a href="https://openreview.net/forum?id=ATpchFiBQi">
     <strong>CodeQuant: Unified Clustering and Quantization for Enhanced Outlier Smoothing in Low-Precision Mixture-of-Experts</strong>
   </a>
 </div>
