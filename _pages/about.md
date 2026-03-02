@@ -10,6 +10,13 @@ page_cover: '/images/header/about_cover.jpg'
 <section class="cv">
 <h2>Education</h2>
 <dl class="cv-grid">
+<dt>Sep 2026 – Expected 2031</dt>
+<dd>
+<strong>New York University</strong>, <a href="https://engineering.nyu.edu/" target="_blank">Tandon School of Engineering</a><br>
+<em>Ph.D. in Electrical and Computer Engineering</em><br>
+Research Focus: AI Efficiency (Algorithm, Hardware, System); Representation Learning;
+</dd>
+
 <dt>Sep 2024 – May 2026</dt>
 <dd>
 <strong>New York University</strong>, <a href="https://cims.nyu.edu/dynamic/" target="_blank">Courant Institute of Mathematical Sciences</a><br>

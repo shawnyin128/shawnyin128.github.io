@@ -65,6 +65,8 @@ testimonials:
   testimonials_description:
 
 testimonial_items:
+  - name: "Mar 2026"
+    content: "A speculative reasoning paper (DREAM-R) I contribute has been accepted by ES-Reasoning Workshop @ ICLR 2026"
   - name: "Jan 2026"
     content: "My paper CodeQuant has been accepted by ICLR 2026!"
   - name: "May 2025"
