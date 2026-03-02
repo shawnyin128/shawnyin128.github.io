@@ -113,6 +113,7 @@ mailchimp_settings:
 social:
 - { icon: "fa-brands fa-github", name: "Github", link: "https://github.com/shawnyin128" }
 - { icon: "fa-brands fa-linkedin", name: "LinkedIn", link: "https://www.linkedin.com/in/yxyoung128/" }
+- { icon: "ai ai-google-scholar", name: "Google Scholar", link: "https://scholar.google.com/citations?user=-wu_lCQAAAAJ&hl=en&oi=sra" }
 # - {icon: "fa-brands fa-facebook", name: "Facebook", link: "https://facebook.com"}
 # - {icon: "fa-brands fa-x-twitter", name: "Twitter", link: "https://twitter.com"}
 #- {icon: "fa-brands fa-instagram", name: "Instagram", link: "https://www.instagram.com/shawnyin128/"}
