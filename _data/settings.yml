@@ -28,10 +28,10 @@ menu_settings:
       url: '/about/'
     - title: '📝 Publications'
       url: '/publications/'
-    - title: '🚀 Projects'
-      url: '/projects/'
-    - title: '✍️ Blog'
-      url: '/blog/'
+    # - title: '🚀 Projects'
+    #   url: '/projects/'
+    # - title: '✍️ Blog'
+    #   url: '/blog/'
     # - title: '📷 Gallery'
     #   url: '/gallery/'
     # - title: '🎬 Videos'
@@ -42,7 +42,7 @@ menu_settings:
 # Author Settings
 author:
   author_name: Shawn Yin
-  author_role: AI Researcher & Master's Student
+  author_role: Incoming PhD candidates @ NYU | MSCS candidate @ NYU | AI Research
   author_bio: Hi there! I’m a Master’s student 👨‍🎓 in Computer Science at NYU Courant, specializing in Artificial Intelligence 🤖. Prior to this, I earned my Master’s in Financial Engineering 📈 from NYU Tandon. I have industry experience as a Software Engineer and Big Data Engineer 💻. Currently, my passion lies in AI research. Always excited to dive into cutting-edge tech, data-driven insights, and innovative AI solutions! 🚀
   author_avatar: '/images/avatar/a2.JPG'
   # cta_button_text: Get In Touch
@@ -52,7 +52,7 @@ author:
 #-------------------------------
 # Projects Settings
 projects_settings:
-  enable: true
+  enable: false
   projects_title: Projects
   projects_description: 
 
@@ -76,7 +76,7 @@ testimonial_items:
 #-------------------------------
 # Blog Section
 blog_settings:
-  enable: true
+  enable: false
   blog_title: Blog
   blog_description:
 
