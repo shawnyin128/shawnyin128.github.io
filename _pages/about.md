@@ -12,20 +12,20 @@ page_cover: '/images/header/about_cover.jpg'
 <dl class="cv-grid">
 <dt>Sep 2026 – Expected 2031</dt>
 <dd>
-<strong>New York University</strong>, <a href="https://engineering.nyu.edu/" target="_blank">Tandon School of Engineering</a><br>
+<strong>New York University</strong>, <a href="https://engineering.nyu.edu/academics/departments/electrical-and-computer-engineering" target="_blank">Tandon School of Engineering</a><br>
 <em>Ph.D. in Electrical and Computer Engineering</em><br>
 Research Focus: AI Efficiency (Algorithm, Hardware, System); Representation Learning;
 </dd>
 
 <dt>Sep 2024 – May 2026</dt>
 <dd>
-<strong>New York University</strong>, <a href="https://cims.nyu.edu/dynamic/" target="_blank">Courant Institute of Mathematical Sciences</a><br>
+<strong>New York University</strong>, <a href="https://cs.nyu.edu/home/index.html" target="_blank">Courant Institute of Mathematical Sciences</a><br>
 <em>M.S. in Computer Science (Artificial Intelligence Concentration)</em>
 </dd>
 
 <dt>Sep 2021 – May 2023</dt>
 <dd>
-<strong>New York University</strong>, <a href="https://engineering.nyu.edu/" target="_blank">Tandon School of Engineering</a><br>
+<strong>New York University</strong>, <a href="https://engineering.nyu.edu/academics/departments/finance-and-risk-engineering" target="_blank">Tandon School of Engineering</a><br>
 <em>M.S. in Financial Engineering (Fintech Software Focus)</em>
 </dd>
 
