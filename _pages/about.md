@@ -14,7 +14,7 @@ page_cover: '/images/header/about_cover.jpg'
 <dd>
 <strong>New York University</strong>, <a href="https://engineering.nyu.edu/academics/departments/electrical-and-computer-engineering" target="_blank">Tandon School of Engineering</a><br>
 <em>Ph.D. in Electrical and Computer Engineering</em><br>
-Research Focus: AI Efficiency (Algorithm, Hardware, System); Representation Learning;
+Research Focus: AI Efficiency (Algorithm, Hardware, System);
 </dd>
 
 <dt>Sep 2024 – May 2026</dt>
