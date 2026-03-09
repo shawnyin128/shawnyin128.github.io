@@ -31,7 +31,7 @@ Research Focus: AI Efficiency (Algorithm, Hardware, System);
 
 <dt>Sep 2016 – May 2020</dt>
 <dd>
-<strong>China Agricultural University</strong>, International College Beijing<br>
+<strong>China Agricultural University</strong>, <a href="https://www.ucdenver.edu/offices/international-affairs/partners/international-college-beijing" target="_blank">International College Beijing</a><br>
 <em>B.A. in Economics, Minor in Mathematics</em><br>
 <em>Joint Program with University of Colorado, Denver</em><br>
 <em>Degree Honor with Distinction, Major Honor with Cum Laude</em>
