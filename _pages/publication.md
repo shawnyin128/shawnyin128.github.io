@@ -20,7 +20,7 @@ page_cover: '/images/header/pub_cover.jpg'
   Yunhai, Hu, Zining Liu, <strong>Xiangyang Yin</strong>, Tianhua Xia, BO BAO, Eric Sather, Vithursan Thangarasa, Sai Qian Zhang
 </div>
 <div class="publication-conference">
-  ES-Reasoning Workshop at International Conference on Learning Representations (ICLR), 2026
+    International Conference on Learning Representations (ICLR), ES-Reasoning Workshop, 2026
 </div>
 </div>
 
