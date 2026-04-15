@@ -10,12 +10,6 @@ page_cover: '/images/header/about_cover.jpg'
 <section class="cv">
 <h2>Education</h2>
 <dl class="cv-grid">
-<dt>Sep 2026 – Expected 2031</dt>
-<dd>
-<strong>New York University</strong>, <a href="https://engineering.nyu.edu/academics/departments/electrical-and-computer-engineering" target="_blank">Tandon School of Engineering</a><br>
-<em>Ph.D. in Electrical and Computer Engineering</em><br>
-Research Focus: AI Efficiency (Algorithm, Hardware, System);
-</dd>
 
 <dt>Sep 2024 – May 2026</dt>
 <dd>
@@ -81,6 +75,11 @@ Research Focus: AI Efficiency (Algorithm, Hardware, System);
 
 <h2>Honors and Awards</h2>
 <dl class="cv-grid">
+<dt>Apr 2026</dt>
+<dd>
+<strong>Suzanne McIntosh Master's Research Fellowship</strong>, Courant Institute, New York University<br>
+</dd>
+
 <dt>Feb 2024</dt>
 <dd>
 <strong>Outstanding Employee of the Year 2023</strong>, Hundsun Technology<br>
