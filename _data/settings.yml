@@ -42,7 +42,7 @@ menu_settings:
 # Author Settings
 author:
   author_name: Shawn Yin
-  author_role: Incoming PhD candidates @ NYU | MSCS candidate @ NYU | AI Research
+  author_role: MSCS candidate @ NYU | AI Research
   author_bio: Hi there! I’m a Master’s student in Computer Science at NYU Courant, specializing in Artificial Intelligence. Prior to this, I earned my Master’s in Financial Engineering from NYU Tandon. I have industry experience as a Software Engineer and Big Data Engineer. Currently, my passion lies in AI research. Always excited to dive into cutting-edge tech, data-driven insights, and innovative AI solutions!
   author_avatar: '/images/avatar/selfie.png'
   # cta_button_text: Get In Touch
@@ -68,7 +68,7 @@ testimonial_items:
   - name: "Mar 2026"
     content: "A speculative reasoning paper (DREAM-R) I contribute has been accepted by ES-Reasoning Workshop @ ICLR 2026!"
   - name: "Feb 2026"
-    content: "I have received and decided to accept the PhD offer from NYU Tandon!"
+    content: "I have received the PhD offer from NYU Tandon!"
   - name: "Jan 2026"
     content: "My paper CodeQuant has been accepted by ICLR 2026!"
   - name: "May 2025"
