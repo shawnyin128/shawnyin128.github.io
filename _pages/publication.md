@@ -12,7 +12,7 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card">
 <div class="publication-title">
-  <a href="https://openreview.net/forum?id=CRgWv0kWjF">
+  <a href="https://openreview.net/forum?id=5Ppjdid5wt&referrer=%5Bthe%20profile%20of%20Xiangyang%20Yin%5D%28%2Fprofile%3Fid%3D~Xiangyang_Yin1%29">
     <strong>DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution</strong>
   </a>
 </div>
@@ -20,7 +20,7 @@ page_cover: '/images/header/pub_cover.jpg'
   Yunhai, Hu, Zining Liu, <strong>Xiangyang Yin</strong>, Tianhua Xia, BO BAO, Eric Sather, Vithursan Thangarasa, Sai Qian Zhang
 </div>
 <div class="publication-conference">
-    International Conference on Learning Representations (ICLR), ES-Reasoning Workshop, 2026
+    International Conference on Machine Learning (ICML), 2026
 </div>
 </div>
 
