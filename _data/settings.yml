@@ -65,14 +65,16 @@ testimonials:
   testimonials_description:
 
 testimonial_items:
+  - name: "Apr 2026"
+    content: "Our Paper DREAM-R (ES-Reasoning Workshop @ ICLR 2026) has been accepted by ICML 2026!"
   - name: "Mar 2026"
     content: "A speculative reasoning paper (DREAM-R) I contribute has been accepted by ES-Reasoning Workshop @ ICLR 2026!"
-  - name: "Feb 2026"
-    content: "I have received the PhD offer from NYU Tandon!"
+  # - name: "Feb 2026"
+  #   content: "I have received the PhD offer from NYU Tandon!"
   - name: "Jan 2026"
     content: "My paper CodeQuant has been accepted by ICLR 2026!"
-  - name: "May 2025"
-    content : "I'm excited to be a part of the AI research team at NYU SAI Lab!"
+  # - name: "May 2025"
+  #   content : "I'm excited to be a part of the AI research team at NYU SAI Lab!"
 
 
 #-------------------------------
