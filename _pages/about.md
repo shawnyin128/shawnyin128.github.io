@@ -34,7 +34,7 @@ page_cover: '/images/header/about_cover.jpg'
 
 <h2>Academic Experience</h2>
 <dl class="cv-grid">
-<dt>Sep 2025 – Now</dt>
+<dt>Sep 2025 – May 2026</dt>
 <dd>
 <strong>Course Assistant</strong>, <a href="https://saiqianzhang.com/COURSE/" target="_blank"> Efficient AI Computing</a>, New York University, USA<br>
 </dd>

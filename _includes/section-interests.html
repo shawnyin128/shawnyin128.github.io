@@ -1,0 +1,128 @@
+{% if site.data.settings.interests_settings.enable == true %}
+<!-- begin interests -->
+<section class="section interests">
+  <div class="container">
+    <div class="row">
+      <div class="col col-12">
+        <div class="container__inner">
+
+          <div class="section__info">
+            <div class="section__head">
+              {% if site.data.settings.interests_settings.title %}
+              <h2 class="section__title"><i class="fa-solid fa-lightbulb"></i> {{ site.data.settings.interests_settings.title }}</h2>
+              {% endif %}
+            </div>
+            {% if site.data.settings.interests_settings.description %}
+            <p class="section__description">{{ site.data.settings.interests_settings.description }}</p>
+            {% endif %}
+          </div>
+
+          <div class="row">
+            {% if site.data.settings.interests_settings.figure %}
+            <div class="col col-5 col-t-12 interests__figure-col animate">
+              <div class="interests__figure">
+                <img class="lazy" data-src="{{ site.data.settings.interests_settings.figure | relative_url }}" alt="Research interests">
+                {% if site.data.settings.interests_settings.figure_caption %}
+                <p class="interests__caption">{{ site.data.settings.interests_settings.figure_caption }}</p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col col-7 col-t-12 interests__items-col">
+            {% else %}
+            <div class="col col-12 interests__items-col">
+            {% endif %}
+              <div class="interests__items">
+                {% for item in site.data.settings.interests_settings.items %}
+                <article class="interest animate">
+                  <div class="interest__content">
+                    {% if item.icon %}<i class="{{ item.icon }} interest__icon"></i>{% endif %}
+                    <div class="interest__body">
+                      <h3 class="interest__title">{{ item.title }}</h3>
+                      {% if item.description %}<p class="interest__description">{{ item.description }}</p>{% endif %}
+                    </div>
+                  </div>
+                </article>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.interests__figure {
+  position: relative;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  background: var(--background-alt-color);
+}
+.interests__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.interests__caption {
+  margin: 12px 4px 0;
+  font-size: 13px;
+  color: var(--text-alt-color);
+  text-align: center;
+}
+.interests__items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.interest__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  transition: all .25s;
+}
+.interest__content:hover {
+  background: var(--background-alt-color);
+}
+.interest__icon {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 8px;
+  background: var(--border-color);
+  color: var(--text-color);
+}
+.interest__body {
+  min-width: 0;
+}
+.interest__title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.interest__description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-alt-color);
+}
+@media (max-width: 768px) {
+  .interests__figure-col {
+    margin-bottom: 24px;
+  }
+  .interest__content {
+    padding: 20px;
+  }
+}
+</style>
+<!-- end interests -->
+{% endif %}

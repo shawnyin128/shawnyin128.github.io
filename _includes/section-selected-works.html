@@ -1,0 +1,67 @@
+{% if site.data.settings.selected_works_settings.enable == true %}
+<!-- begin selected works -->
+<section class="section selected-works">
+  <div class="container">
+    <div class="row">
+      <div class="col col-12">
+        <div class="container__inner">
+
+          <div class="section__info">
+            <div class="section__head">
+              {% if site.data.settings.selected_works_settings.title %}
+              <h2 class="section__title"><i class="fa-solid fa-star"></i> {{ site.data.settings.selected_works_settings.title }}</h2>
+              {% endif %}
+              {% if site.data.settings.selected_works_settings.view_all_link %}
+              <a class="section__link" href="{{ site.data.settings.selected_works_settings.view_all_link | relative_url }}">View all <i class="fa-solid fa-arrow-right-long"></i></a>
+              {% endif %}
+            </div>
+            {% if site.data.settings.selected_works_settings.description %}
+            <p class="section__description">{{ site.data.settings.selected_works_settings.description }}</p>
+            {% endif %}
+          </div>
+
+          <div class="row">
+            {% for work in site.data.settings.selected_works_settings.items limit:4 %}
+            <article class="project col col-6 col-t-12 animate">
+              <div class="project__content">
+                <div class="project__info">
+                  {% if work.badge %}<span class="work-badge">{{ work.badge }}</span>{% endif %}
+                  <h3 class="project__title">
+                    {% if work.link %}
+                    <a href="{{ work.link }}"{% if work.external %} target="_blank" rel="noopener"{% endif %}>{{ work.title }}</a>
+                    {% else %}
+                    {{ work.title }}
+                    {% endif %}
+                  </h3>
+                  {% if work.description %}<div class="project__description">{{ work.description }}</div>{% endif %}
+                </div>
+                {% if work.image %}
+                <a href="{{ work.link }}" class="project__image"{% if work.external %} target="_blank" rel="noopener"{% endif %}>
+                  <img class="lazy" data-src="{{ work.image | relative_url }}" alt="{{ work.title }}">
+                </a>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.selected-works .work-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--text-alt-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+</style>
+<!-- end selected works -->
+{% endif %}

@@ -12,7 +12,7 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card">
 <div class="publication-title">
-  <a href="https://openreview.net/forum?id=5Ppjdid5wt&referrer=%5Bthe%20profile%20of%20Xiangyang%20Yin%5D%28%2Fprofile%3Fid%3D~Xiangyang_Yin1%29">
+  <a href="https://openreview.net/forum?id=5Ppjdid5wt">
     <strong>DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution</strong>
   </a>
 </div>
@@ -26,7 +26,7 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card">
 <div class="publication-title">
-  <a href="https://openreview.net/forum?id=ATpchFiBQi">
+  <a href="https://arxiv.org/abs/2604.10496">
     <strong>CodeQuant: Unified Clustering and Quantization for Enhanced Outlier Smoothing in Low-Precision Mixture-of-Experts</strong>
   </a>
 </div>
