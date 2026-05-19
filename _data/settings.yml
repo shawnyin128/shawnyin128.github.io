@@ -31,7 +31,7 @@ menu_settings:
     - title: '🚀 Projects'
       url: '/projects/'
     - title: '✍️ Blogs'
-      url: '/blog/'
+      url: '/blogs/'
     # - title: '📷 Gallery'
     #   url: '/gallery/'
     # - title: '🎬 Videos'
