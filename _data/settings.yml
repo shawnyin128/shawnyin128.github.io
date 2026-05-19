@@ -30,7 +30,7 @@ menu_settings:
       url: '/publications/'
     - title: '🚀 Projects'
       url: '/projects/'
-    - title: '✍️ Blog'
+    - title: '✍️ Blogs'
       url: '/blog/'
     # - title: '📷 Gallery'
     #   url: '/gallery/'
@@ -136,7 +136,7 @@ testimonial_items:
 # Blog Section
 blog_settings:
   enable: true
-  blog_title: Blog
+  blog_title: Blogs
   blog_description:
 
 
