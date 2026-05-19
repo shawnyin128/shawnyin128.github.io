@@ -63,7 +63,7 @@ interests_settings:
   enable: true
   title: Research Interests
   description:
-  figure: '/images/header/home_cover.jpg'   # replace with your interests diagram
+  figure: '/images/header/research_interests.svg'   # temp placeholder — replace when you have your real diagram
   figure_caption:                            # optional caption under the figure
   items:
     - title: Efficient AI Inference
@@ -93,7 +93,7 @@ selected_works_settings:
       external: true
     - title: 'CodeQuant: Low-Precision MoE Quantization'
       badge: 'ICLR 2026'
-      description: Low-precision MoE clustering-based quantization.
+      description: Low-precision MoE clustering.
       image:    # add a figure path here when ready
       link: 'https://arxiv.org/abs/2604.10496'
       external: true

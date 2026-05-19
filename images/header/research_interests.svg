@@ -1,0 +1,56 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Research interests overview: Efficient AI Inference, Agents, World Models">
+  <style>
+    .stroke      { stroke: #0f1419; stroke-width: 3;   fill: none; }
+    .stroke-soft { stroke: #8b8e95; stroke-width: 2;   fill: none; }
+    .dot         { fill: #0f1419; }
+    .text        { fill: #0f1419; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+    .text-soft   { fill: #8b8e95; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+    .header      { font-size: 44px; font-weight: 600; letter-spacing: 3px; }
+    .label       { font-size: 60px; font-weight: 600; }
+    .sublabel    { font-size: 32px; font-weight: 400; }
+
+    @media (prefers-color-scheme: dark) {
+      .stroke      { stroke: #e6e6e6; }
+      .stroke-soft { stroke: #9e9e9e; }
+      .dot         { fill: #e6e6e6; }
+      .text        { fill: #e6e6e6; }
+      .text-soft   { fill: #9e9e9e; }
+    }
+  </style>
+
+  <!-- Hub: Research -->
+  <rect x="450" y="70" width="300" height="110" rx="18" class="stroke"/>
+  <text x="600" y="138" text-anchor="middle" class="text header">RESEARCH</text>
+
+  <!-- Connectors -->
+  <line x1="600" y1="180" x2="600" y2="220" class="stroke-soft"/>
+  <line x1="230" y1="220" x2="970" y2="220" class="stroke-soft"/>
+  <line x1="230" y1="220" x2="230" y2="280" class="stroke-soft"/>
+  <line x1="600" y1="220" x2="600" y2="280" class="stroke-soft"/>
+  <line x1="970" y1="220" x2="970" y2="280" class="stroke-soft"/>
+
+  <!-- Junction dots -->
+  <circle cx="230" cy="220" r="6" class="dot"/>
+  <circle cx="600" cy="220" r="6" class="dot"/>
+  <circle cx="970" cy="220" r="6" class="dot"/>
+
+  <!-- Box 1: Efficient AI Inference -->
+  <rect x="60"  y="280" width="340" height="440" rx="24" class="stroke"/>
+  <text x="230" y="470" text-anchor="middle" class="text label">Efficient AI</text>
+  <text x="230" y="540" text-anchor="middle" class="text label">Inference</text>
+  <line x1="120" y1="600" x2="340" y2="600" class="stroke-soft"/>
+  <text x="230" y="650" text-anchor="middle" class="text-soft sublabel">HW–SW Co-design</text>
+
+  <!-- Box 2: Agents -->
+  <rect x="430" y="280" width="340" height="440" rx="24" class="stroke"/>
+  <text x="600" y="510" text-anchor="middle" class="text label">Agents</text>
+  <line x1="490" y1="600" x2="710" y2="600" class="stroke-soft"/>
+  <text x="600" y="650" text-anchor="middle" class="text-soft sublabel">Tooling + Eval</text>
+
+  <!-- Box 3: World Models -->
+  <rect x="800" y="280" width="340" height="440" rx="24" class="stroke"/>
+  <text x="970" y="470" text-anchor="middle" class="text label">World</text>
+  <text x="970" y="540" text-anchor="middle" class="text label">Models</text>
+  <line x1="860" y1="600" x2="1080" y2="600" class="stroke-soft"/>
+  <text x="970" y="650" text-anchor="middle" class="text-soft sublabel">Representation</text>
+</svg>
