@@ -63,18 +63,29 @@ interests_settings:
   enable: true
   title: Research Interests
   description:
-  figure: '/images/header/research_interests.svg'   # temp placeholder — replace when you have your real diagram
+  figure:                                    # leave blank to render items only (no figure column)
   figure_caption:                            # optional caption under the figure
   items:
     - title: Efficient AI Inference
       icon: 'fa-solid fa-bolt'
       description: Hardware-software co-design across speculative decoding, quantization, and pruning.
+      sub_items:
+        - Quantization
+        - Speculative Decoding
+        - Pruning
     - title: Agents
       icon: 'fa-solid fa-robot'
       description: Building agent tooling and constructing benchmarks for evaluating agent capabilities.
+      sub_items:
+        - Benchmark
+        - Tool
+        - Application
     - title: World Models
       icon: 'fa-solid fa-globe'
       description: Using world-model ideas to strengthen representation learning.
+      sub_items:
+        - Language
+        - Multimodal
 
 
 #-------------------------------
@@ -88,7 +99,7 @@ selected_works_settings:
     - title: 'DREAM-R: Multimodal Speculative Reasoning'
       badge: 'ICML 2026'
       description: Reasoning specific speculative decoding.
-      image:    # add a figure path here when ready
+      image:    # add a figure path here when readyß
       link: 'https://openreview.net/forum?id=5Ppjdid5wt'
       external: true
     - title: 'CodeQuant: Low-Precision MoE Quantization'

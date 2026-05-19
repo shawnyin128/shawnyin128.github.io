@@ -289,50 +289,72 @@
             
           </div>
 
-          <div class="row">
+          <div class="interests__items">
             
-            <div class="col col-5 col-t-12 interests__figure-col animate">
-              <div class="interests__figure">
-                <img class="lazy" data-src="/images/header/research_interests.svg" alt="Research interests">
+            <div class="interest-group animate">
+              <article class="interest-parent">
+                <i class="fa-solid fa-bolt interest-parent__icon"></i>
+                <div class="interest-parent__text">
+                  <h3 class="interest-parent__title">Efficient AI Inference</h3>
+                  <p class="interest-parent__desc">Hardware-software co-design across speculative decoding, quantization, and pruning.</p>
+                </div>
+              </article>
+
+              
+              <div class="interest-children">
+                
+                <div class="interest-child">Quantization</div>
+                
+                <div class="interest-child">Speculative Decoding</div>
+                
+                <div class="interest-child">Pruning</div>
                 
               </div>
+              
             </div>
-            <div class="col col-7 col-t-12 interests__items-col">
             
-              <div class="interests__items">
+            <div class="interest-group animate">
+              <article class="interest-parent">
+                <i class="fa-solid fa-robot interest-parent__icon"></i>
+                <div class="interest-parent__text">
+                  <h3 class="interest-parent__title">Agents</h3>
+                  <p class="interest-parent__desc">Building agent tooling and constructing benchmarks for evaluating agent capabilities.</p>
+                </div>
+              </article>
+
+              
+              <div class="interest-children">
                 
-                <article class="interest animate">
-                  <div class="interest__content">
-                    <i class="fa-solid fa-bolt interest__icon"></i>
-                    <div class="interest__body">
-                      <h3 class="interest__title">Efficient AI Inference</h3>
-                      <p class="interest__description">Hardware-software co-design across speculative decoding, quantization, and pruning.</p>
-                    </div>
-                  </div>
-                </article>
+                <div class="interest-child">Benchmark</div>
                 
-                <article class="interest animate">
-                  <div class="interest__content">
-                    <i class="fa-solid fa-robot interest__icon"></i>
-                    <div class="interest__body">
-                      <h3 class="interest__title">Agents</h3>
-                      <p class="interest__description">Building agent tooling and constructing benchmarks for evaluating agent capabilities.</p>
-                    </div>
-                  </div>
-                </article>
+                <div class="interest-child">Tool</div>
                 
-                <article class="interest animate">
-                  <div class="interest__content">
-                    <i class="fa-solid fa-globe interest__icon"></i>
-                    <div class="interest__body">
-                      <h3 class="interest__title">World Models</h3>
-                      <p class="interest__description">Using world-model ideas to strengthen representation learning.</p>
-                    </div>
-                  </div>
-                </article>
+                <div class="interest-child">Application</div>
                 
               </div>
+              
             </div>
+            
+            <div class="interest-group animate">
+              <article class="interest-parent">
+                <i class="fa-solid fa-globe interest-parent__icon"></i>
+                <div class="interest-parent__text">
+                  <h3 class="interest-parent__title">World Models</h3>
+                  <p class="interest-parent__desc">Using world-model ideas to strengthen representation learning.</p>
+                </div>
+              </article>
+
+              
+              <div class="interest-children">
+                
+                <div class="interest-child">Language</div>
+                
+                <div class="interest-child">Multimodal</div>
+                
+              </div>
+              
+            </div>
+            
           </div>
 
         </div>
@@ -342,73 +364,90 @@
 </section>
 
 <style>
-.interests__figure {
-  position: relative;
-  border-radius: 24px;
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  background: var(--background-alt-color);
-}
-.interests__figure img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.interests__caption {
-  margin: 12px 4px 0;
-  font-size: 13px;
-  color: var(--text-alt-color);
-  text-align: center;
-}
 .interests__items {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
 }
-.interest__content {
+
+.interest-group {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 24px;
-  border-radius: 24px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Parent bar: outlined header */
+.interest-parent {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 16px;
   border: 1px solid var(--border-color);
-  transition: all .25s;
+  background: transparent;
 }
-.interest__content:hover {
-  background: var(--background-alt-color);
-}
-.interest__icon {
+.interest-parent__icon {
   flex: 0 0 32px;
   width: 32px;
   height: 32px;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 32px;
   text-align: center;
-  border-radius: 8px;
-  background: var(--border-color);
-  color: var(--text-color);
+  border-radius: 10px;
+  background: var(--text-color);
+  color: var(--background-color);
 }
-.interest__body {
+.interest-parent__text {
   min-width: 0;
 }
-.interest__title {
-  margin: 0 0 6px;
-  font-size: 18px;
+.interest-parent__title {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
 }
-.interest__description {
-  margin: 0;
-  font-size: 14px;
+.interest-parent__desc {
+  margin: 2px 0 0;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--text-alt-color);
 }
-@media (max-width: 768px) {
-  .interests__figure-col {
-    margin-bottom: 24px;
+
+/* Sub-card row */
+.interest-children {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.interest-child {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-color);
+  background: var(--background-alt-color);
+  border: 1px solid transparent;
+  border-radius: 14px;
+  transition: background-color .25s ease, border-color .25s ease;
+}
+.interest-child:hover {
+  background: var(--background-color);
+  border-color: var(--border-color);
+}
+
+@media (max-width: 576px) {
+  .interest-parent {
+    padding: 14px 16px;
   }
-  .interest__content {
-    padding: 20px;
+  .interest-children {
+    gap: 8px;
+  }
+  .interest-child {
+    flex: 1 1 calc(50% - 4px);
+    padding: 12px 14px;
   }
 }
 </style>
