@@ -12,6 +12,11 @@
   .nav__list {
     display: flex;
     align-items: baseline;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
     overflow-x: scroll;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -47,6 +52,10 @@
         font-weight: 600;
         border-color: var(--primary-color);
       }
+    }
+
+    .nav__item:last-child .nav__link {
+      margin-right: 0;
     }
   }
 }
