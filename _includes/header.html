@@ -6,8 +6,14 @@
         <nav class="main-nav">
           <ul class="nav__list list-reset dragscroll">
             {% for item in site.data.settings.menu_settings.menu_items %}
+            {% assign is_active = false %}
+            {% if item.url == '/' %}
+              {% if page.url == '/' %}{% assign is_active = true %}{% endif %}
+            {% else %}
+              {% if page.url contains item.url %}{% assign is_active = true %}{% endif %}
+            {% endif %}
             <li class="nav__item">
-              <a href="{{ item.url | relative_url }}" class="nav__link{% if page.url == item.url %} active-link{% endif %}">{{ item.title }}</a>
+              <a href="{{ item.url | relative_url }}" class="nav__link{% if is_active %} active-link{% endif %}">{{ item.title }}</a>
             </li>
             {% endfor %}
           </ul>

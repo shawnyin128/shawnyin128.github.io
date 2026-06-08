@@ -119,11 +119,19 @@
 (function () {
   var MODES = ['auto', 'light', 'dark'];
   var ICON = { auto: 'fa-gear', light: 'fa-sun', dark: 'fa-moon' };
-  var LABEL = { auto: 'Theme: Auto (follows system)', light: 'Theme: Light', dark: 'Theme: Dark' };
+  var NEXT_LABEL = {
+    auto: 'Switch to Light',
+    light: 'Switch to Dark',
+    dark: 'Switch to Auto'
+  };
 
   function getMode() {
     var v = localStorage.getItem('color-scheme');
     return MODES.indexOf(v) >= 0 ? v : 'auto';
+  }
+
+  function next(mode) {
+    return MODES[(MODES.indexOf(mode) + 1) % MODES.length];
   }
 
   function applyMode(mode) {
@@ -131,17 +139,15 @@
     if (!body) return;
     body.classList.remove('scheme--toggle', 'scheme--light', 'scheme--dark');
     body.classList.add(mode === 'auto' ? 'scheme--toggle' : 'scheme--' + mode);
+    // Show the icon of the NEXT mode — what clicking will switch to.
+    var nextMode = next(mode);
     document.querySelectorAll('.theme-switch__icon').forEach(function (i) {
-      i.className = 'theme-switch__icon fa-solid ' + ICON[mode];
+      i.className = 'theme-switch__icon fa-solid ' + ICON[nextMode];
     });
     document.querySelectorAll('[data-theme-switch]').forEach(function (b) {
-      b.setAttribute('title', LABEL[mode]);
-      b.setAttribute('aria-label', LABEL[mode]);
+      b.setAttribute('title', NEXT_LABEL[mode]);
+      b.setAttribute('aria-label', NEXT_LABEL[mode]);
     });
-  }
-
-  function next(mode) {
-    return MODES[(MODES.indexOf(mode) + 1) % MODES.length];
   }
 
   function init() { applyMode(getMode()); }
@@ -179,21 +185,31 @@
         <nav class="main-nav">
           <ul class="nav__list list-reset dragscroll">
             
+            
+            
             <li class="nav__item">
               <a href="/" class="nav__link">Home</a>
             </li>
+            
+            
             
             <li class="nav__item">
               <a href="/about/" class="nav__link">About</a>
             </li>
             
+            
+            
             <li class="nav__item">
               <a href="/publications/" class="nav__link">Publications</a>
             </li>
             
+            
+            
             <li class="nav__item">
               <a href="/projects/" class="nav__link">Projects</a>
             </li>
+            
+            
             
             <li class="nav__item">
               <a href="/blogs/" class="nav__link">Blogs</a>
