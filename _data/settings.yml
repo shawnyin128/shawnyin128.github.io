@@ -66,6 +66,13 @@ interests_settings:
   figure:                                    # leave blank to render items only (no figure column)
   figure_caption:                            # optional caption under the figure
   items:
+    - title: Representation Learning
+      icon: 'fa-solid fa-fingerprint'
+      description: Studying what makes a visual representation universal, useful, and "good".
+      sub_items:
+        - Vision
+        - Multimodal
+        - Embodied
     - title: Efficient AI Inference
       icon: 'fa-solid fa-bolt'
       description: Hardware-software co-design across speculative decoding, quantization, and pruning.
@@ -80,12 +87,6 @@ interests_settings:
         - Benchmark
         - Tool
         - Application
-    - title: World Models
-      icon: 'fa-solid fa-globe'
-      description: Using world-model ideas to strengthen representation learning.
-      sub_items:
-        - Language
-        - Multimodal
 
 
 #-------------------------------
