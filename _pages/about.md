@@ -1,13 +1,13 @@
 ---
 layout: page
-title: 👨‍💻 Curriculum Vitae
+title: Curriculum Vitae
 description: What's past is prologue.
 permalink: /about/
 image: 
 page_cover: '/images/header/about_cover.jpg'
 ---
 
-<section class="cv">
+<section class="cv animate">
 <h2>Education</h2>
 <dl class="cv-grid">
 
@@ -77,7 +77,7 @@ page_cover: '/images/header/about_cover.jpg'
 <dl class="cv-grid">
 <dt>Apr 2026</dt>
 <dd>
-<a href="https://cims.nyu.edu/dynamic/academics/student_recognition/" target="_blank"><strong>Suzanne McIntosh Master's Research Fellowship</strong></a>, Courant Institute, New York University<br>
+<a href="https://cims.nyu.edu/dynamic/academics/student_recognition/" target="_blank"><strong>Suzanne McIntosh Master's Research Fellowship</strong></a>, Courant Institute of Mathematical Sciences, New York University<br>
 </dd>
 
 <dt>Feb 2024</dt>

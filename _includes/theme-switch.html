@@ -1,0 +1,92 @@
+<button class="theme-switch" data-theme-switch type="button" aria-label="Toggle color scheme" title="Theme">
+  <i class="theme-switch__icon fa-solid fa-gear" aria-hidden="true"></i>
+</button>
+
+<style>
+.theme-switch {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: background-color .25s ease, color .25s ease, transform .25s ease;
+}
+.theme-switch:hover {
+  background: var(--background-alt-color);
+}
+.theme-switch:active {
+  transform: scale(0.94);
+}
+.theme-switch__icon {
+  display: block;
+  line-height: 1;
+}
+@media (max-width: 576px) {
+  .theme-switch {
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+  }
+}
+</style>
+
+<script>
+(function () {
+  var MODES = ['auto', 'light', 'dark'];
+  var ICON = { auto: 'fa-gear', light: 'fa-sun', dark: 'fa-moon' };
+  var LABEL = { auto: 'Theme: Auto (follows system)', light: 'Theme: Light', dark: 'Theme: Dark' };
+
+  function getMode() {
+    var v = localStorage.getItem('color-scheme');
+    return MODES.indexOf(v) >= 0 ? v : 'auto';
+  }
+
+  function applyMode(mode) {
+    var body = document.body;
+    if (!body) return;
+    body.classList.remove('scheme--toggle', 'scheme--light', 'scheme--dark');
+    body.classList.add(mode === 'auto' ? 'scheme--toggle' : 'scheme--' + mode);
+    document.querySelectorAll('.theme-switch__icon').forEach(function (i) {
+      i.className = 'theme-switch__icon fa-solid ' + ICON[mode];
+    });
+    document.querySelectorAll('[data-theme-switch]').forEach(function (b) {
+      b.setAttribute('title', LABEL[mode]);
+      b.setAttribute('aria-label', LABEL[mode]);
+    });
+  }
+
+  function next(mode) {
+    return MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+  }
+
+  function init() { applyMode(getMode()); }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('[data-theme-switch]');
+    if (!btn) return;
+    var n = next(getMode());
+    localStorage.setItem('color-scheme', n);
+    applyMode(n);
+  });
+})();
+</script>

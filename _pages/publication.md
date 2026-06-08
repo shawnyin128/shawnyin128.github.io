@@ -1,16 +1,16 @@
 ---
 layout: page
-title: 📝 Publications
+title: Publications
 description: Research is formalized curiosity.
 permalink: /publications/
 image: 
 page_cover: '/images/header/pub_cover.jpg'
 ---
 
-## **2026**
+<h2 class="animate"><strong>2026</strong></h2>
 <div class="publications-grid">
 
-<div class="publication-card">
+<div class="publication-card animate">
 <div class="publication-title">
   <a href="https://arxiv.org/abs/2605.28678">
     <strong>DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution</strong>
@@ -24,7 +24,7 @@ page_cover: '/images/header/pub_cover.jpg'
 </div>
 </div>
 
-<div class="publication-card">
+<div class="publication-card animate">
 <div class="publication-title">
   <a href="https://arxiv.org/abs/2604.10496">
     <strong>CodeQuant: Unified Clustering and Quantization for Enhanced Outlier Smoothing in Low-Precision Mixture-of-Experts</strong>

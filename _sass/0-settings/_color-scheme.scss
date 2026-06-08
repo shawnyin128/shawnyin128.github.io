@@ -29,6 +29,11 @@
   --tr-color: var(--light-gray);
 
   --syntax-highlighting-background: #f3f3f3;
+
+  /* 3-tier text hierarchy (used by publications & selected works) */
+  --text-strong: #0f1419;
+  --text-mid: #2a2f35;
+  --text-soft: #8b8e95;
 }
 
 @mixin scheme-dark {
@@ -59,4 +64,9 @@
   --tr-color: #080b12;
 
   --syntax-highlighting-background: var(--background-alt-color);
+
+  /* 3-tier text hierarchy (used by publications & selected works) */
+  --text-strong: #f3f4f6;
+  --text-mid: #dbdee3;
+  --text-soft: #8a9099;
 }

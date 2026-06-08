@@ -22,19 +22,19 @@ breadcrumbs:
 # Navigation Settings
 menu_settings:
   menu_items:
-    - title: '🏠 Home'
+    - title: 'Home'
       url: '/'
-    - title: '👨‍💻 About'
+    - title: 'About'
       url: '/about/'
-    - title: '📝 Publications'
+    - title: 'Publications'
       url: '/publications/'
-    - title: '🚀 Projects'
+    - title: 'Projects'
       url: '/projects/'
-    - title: '✍️ Blogs'
+    - title: 'Blogs'
       url: '/blogs/'
-    # - title: '📷 Gallery'
+    # - title: 'Gallery'
     #   url: '/gallery/'
-    # - title: '🎬 Videos'
+    # - title: 'Videos'
     #   url: '/videos/'
 
 
@@ -43,8 +43,8 @@ menu_settings:
 author:
   author_name: Xiangyang (Shawn) Yin
   author_role: Machine Learning Research Engineer
-  author_bio: Hi! I’m a Machine Learning Research Engineer. I recently completed my MSCS at NYU Courant, following an MS in Financial Engineering at NYU Tandon and a few years of industry experience as a software and data engineer.
-  author_avatar: '/images/avatar/selfie.png'
+  author_bio: Hi! I’m a Machine Learning Research Engineer. I recently completed my MS in Computer Science at NYU Courant, following an MS in Financial Engineering at NYU Tandon and a few years of industry experience as a software developer, big data engineer,and data scientist.
+  author_avatar: '/images/avatar/official.jpeg'
   # cta_button_text: Get In Touch
   # cta_button_link: '/contact/'
 
@@ -97,18 +97,18 @@ selected_works_settings:
   description:
   view_all_link: '/publications/'
   items:
-    - title: 'DREAM-R: Multimodal Speculative Reasoning'
-      badge: 'ICML 2026'
-      description: Reasoning specific speculative decoding.
-      image:    # add a figure path here when readyß
-      link: 'https://openreview.net/forum?id=5Ppjdid5wt'
-      external: true
-    - title: 'CodeQuant: Low-Precision MoE Quantization'
-      badge: 'ICLR 2026'
-      description: Low-precision MoE clustering.
-      image:    # add a figure path here when ready
+    - title: 'DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution'
+      venue: 'ICML, 2026'
+      authors: 'Yunhai Hu, Zining Liu, <strong>Xiangyang Yin</strong>, Tianhua Xia, BO BAO, Eric Sather, Vithursan Thangarasa, Sai Qian Zhang'
+      link: 'https://arxiv.org/abs/2605.28678'
+      image: '/images/works/dream-r.png'
+      tag:      # optional accolade, e.g. "Oral Presentation"
+    - title: 'CodeQuant: Unified Clustering and Quantization for Enhanced Outlier Smoothing in Low-Precision Mixture-of-Experts'
+      venue: 'ICLR, 2026'
+      authors: '<strong>Xiangyang Yin*</strong>, Xingyu Liu*, Tianhua Xia, BO BAO, Vithursan Thangarasa, Valavan Manohararajah, Eric Sather, Sai Qian Zhang'
       link: 'https://arxiv.org/abs/2604.10496'
-      external: true
+      image: '/images/works/codequant.png'
+      tag:
 
 
 #-------------------------------
@@ -120,15 +120,17 @@ testimonials:
 
 testimonial_items:
   - name: "May 2026"
-    content: "I will join Cerebras Systems as a Machine Leraninng Research Engineer Intern in Summer 2026!"
+    content: "Will be joining Cerebras Systems as a Machine Learning Research Engineer Intern, Summer 2026!"
   - name: "Apr 2026"
-    content: "Our Paper DREAM-R (ES-Reasoning Workshop @ ICLR 2026) has been accepted by ICML 2026!"
+    content: "Awarded the Suzanne McIntosh Master's Research Fellowship by NYU Courant!"
+  - name: "Apr 2026"
+    content: "DREAM-R accepted to ICML 2026!"
   - name: "Mar 2026"
-    content: "A speculative reasoning paper (DREAM-R) I contribute has been accepted by ES-Reasoning Workshop @ ICLR 2026!"
+    content: "DREAM-R accepted to the ES-Reasoning Workshop at ICLR 2026!"
   # - name: "Feb 2026"
   #   content: "I have received the PhD offer from NYU Tandon!"
   - name: "Jan 2026"
-    content: "My paper CodeQuant has been accepted by ICLR 2026!"
+    content: "CodeQuant accepted to ICLR 2026!"
   # - name: "May 2025"
   #   content : "I'm excited to be a part of the AI research team at NYU SAI Lab!"
 
@@ -171,9 +173,9 @@ mailchimp_settings:
 #-------------------------------
 # Social Icons Settings
 social:
+- { icon: "ai ai-google-scholar", name: "Google Scholar", link: "https://scholar.google.com/citations?user=-wu_lCQAAAAJ&hl=en&oi=sra" }
 - { icon: "fa-brands fa-github", name: "Github", link: "https://github.com/shawnyin128" }
 - { icon: "fa-brands fa-linkedin", name: "LinkedIn", link: "https://www.linkedin.com/in/yxyoung128/" }
-- { icon: "ai ai-google-scholar", name: "Google Scholar", link: "https://scholar.google.com/citations?user=-wu_lCQAAAAJ&hl=en&oi=sra" }
 # - {icon: "fa-brands fa-facebook", name: "Facebook", link: "https://facebook.com"}
 # - {icon: "fa-brands fa-x-twitter", name: "Twitter", link: "https://twitter.com"}
 #- {icon: "fa-brands fa-instagram", name: "Instagram", link: "https://www.instagram.com/shawnyin128/"}

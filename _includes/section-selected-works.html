@@ -1,6 +1,6 @@
 {% if site.data.settings.selected_works_settings.enable == true %}
 <!-- begin selected works -->
-<section class="section selected-works">
+<section class="section selected-works animate">
   <div class="container">
     <div class="row">
       <div class="col col-12">
@@ -20,25 +20,32 @@
             {% endif %}
           </div>
 
-          <div class="row">
+          <div class="works">
             {% for work in site.data.settings.selected_works_settings.items limit:4 %}
-            <article class="project col col-6 col-t-12 animate">
-              <div class="project__content">
-                <div class="project__info">
-                  {% if work.badge %}<span class="work-badge">{{ work.badge }}</span>{% endif %}
-                  <h3 class="project__title">
-                    {% if work.link %}
-                    <a href="{{ work.link }}"{% if work.external %} target="_blank" rel="noopener"{% endif %}>{{ work.title }}</a>
-                    {% else %}
-                    {{ work.title }}
-                    {% endif %}
-                  </h3>
-                  {% if work.description %}<div class="project__description">{{ work.description }}</div>{% endif %}
-                </div>
-                {% if work.image %}
-                <a href="{{ work.link }}" class="project__image"{% if work.external %} target="_blank" rel="noopener"{% endif %}>
-                  <img class="lazy" data-src="{{ work.image | relative_url }}" alt="{{ work.title }}">
-                </a>
+            <article class="work-card animate">
+              {% if work.image %}
+              <div class="work-card__image">
+                <img class="lazy" data-src="{{ work.image | relative_url }}" alt="{{ work.title }}">
+              </div>
+              {% endif %}
+              <div class="work-card__body">
+                {% if work.title %}
+                <h3 class="work-card__title">
+                  {% if work.link %}
+                  <a href="{{ work.link }}" target="_blank" rel="noopener">{{ work.title }}</a>
+                  {% else %}
+                  {{ work.title }}
+                  {% endif %}
+                </h3>
+                {% endif %}
+                {% if work.venue %}
+                <p class="work-card__meta">{{ work.venue }}</p>
+                {% endif %}
+                {% if work.authors %}
+                <p class="work-card__authors">{{ work.authors }}</p>
+                {% endif %}
+                {% if work.tag %}
+                <p class="work-card__tag">{{ work.tag }}</p>
                 {% endif %}
               </div>
             </article>
@@ -52,15 +59,102 @@
 </section>
 
 <style>
-.selected-works .work-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  margin-bottom: 10px;
-  font-size: 12px;
-  line-height: 1;
-  color: var(--text-alt-color);
+.selected-works .works {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.selected-works .work-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 24px;
   border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: background-color .25s ease;
+}
+.selected-works .work-card:hover {
+  background: var(--background-alt-color);
+}
+
+.selected-works .work-card__image {
+  flex: 0 0 165px;
+  width: 165px;
+  aspect-ratio: 4 / 3;
   border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-alt-color);
+}
+.selected-works .work-card__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.selected-works .work-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.selected-works .work-card__title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-strong);
+}
+.selected-works .work-card__title a {
+  color: inherit;
+}
+.selected-works .work-card__title a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+}
+
+.selected-works .work-card__meta {
+  margin: 0 0 6px;
+  font-size: 14px;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--text-soft);
+}
+
+.selected-works .work-card__authors {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-mid);
+}
+.selected-works .work-card__authors strong {
+  font-weight: 600;
+}
+
+.selected-works .work-card__tag {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+@media (max-width: 576px) {
+  .selected-works .work-card {
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+  }
+  .selected-works .work-card__image {
+    width: 100%;
+    max-width: 240px;
+  }
 }
 </style>
 <!-- end selected works -->

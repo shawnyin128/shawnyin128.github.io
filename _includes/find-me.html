@@ -1,0 +1,39 @@
+{% if site.data.settings.social %}
+<div class="find-me">
+  {% for social in site.data.settings.social %}
+  <a class="find-me__link" href="{{ social.link }}" target="_blank" rel="noopener">
+    <i class="{{ social.icon }}" aria-hidden="true"></i>
+    <span>{{ social.name }}</span>
+  </a>{% unless forloop.last %}<span class="find-me__sep">/</span>{% endunless %}
+  {% endfor %}
+</div>
+
+<style>
+.find-me {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 0;
+  font-size: 14px;
+}
+.find-me__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text-color);
+  transition: color .2s ease;
+}
+.find-me__link i {
+  font-size: 15px;
+}
+.find-me__link:hover {
+  color: var(--primary-color);
+}
+.find-me__sep {
+  color: var(--text-alt-color);
+  font-weight: 400;
+}
+</style>
+{% endif %}

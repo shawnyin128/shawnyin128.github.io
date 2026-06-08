@@ -5,6 +5,20 @@
 
 <body class="{% if site.data.settings.color_scheme == "auto" %}scheme--toggle{% else %}scheme--{{ site.data.settings.color_scheme }}{% endif %}">
 
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('color-scheme');
+        if (!saved || saved === 'auto') return;
+        var b = document.body;
+        b.classList.remove('scheme--toggle', 'scheme--light', 'scheme--dark');
+        b.classList.add('scheme--' + saved);
+      } catch (e) {}
+    })();
+  </script>
+
+  {% include theme-switch.html %}
+
   {% if site.data.settings.google-analytics %}
     {% include google-analytics.html %}
   {% endif %}

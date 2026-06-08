@@ -207,31 +207,13 @@
 
 
 /* =========================
-   Color Hierarchy (渐变层级)
+   Color Hierarchy (渐变层级) — reads from --text-strong / --text-mid / --text-soft
+   defined in color-scheme. Same vars also used in Selected Works.
    ========================= */
 
-/* 手动模式：light */
-.scheme--light .publication-title { color: #101214; }
-.scheme--light .publication-authors { color: #3f444a; }
-.scheme--light .publication-conference { color: #6a717a; }
-
-/* 手动模式：dark */
-.scheme--dark .publication-title { color: #f3f4f6; }
-.scheme--dark .publication-authors { color: #c7cbd1; }
-.scheme--dark .publication-conference { color: #9aa3ad; }
-
-/* auto 模式：跟随系统主题 */
-@media (prefers-color-scheme: dark) {
-  .scheme--toggle .publication-title { color: #f3f4f6; }
-  .scheme--toggle .publication-authors { color: #c7cbd1; }
-  .scheme--toggle .publication-conference { color: #9aa3ad; }
-}
-
-@media (prefers-color-scheme: light) {
-  .scheme--toggle .publication-title { color: #101214; }
-  .scheme--toggle .publication-authors { color: #3f444a; }
-  .scheme--toggle .publication-conference { color: #6a717a; }
-}
+.publication-title { color: var(--text-strong); }
+.publication-authors { color: var(--text-mid); }
+.publication-conference { color: var(--text-soft); }
 
 
 /* =========================
