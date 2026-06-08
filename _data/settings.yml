@@ -73,7 +73,7 @@ interests_settings:
         - Vision
         - Multimodal
         - Embodied
-    - title: Efficient AI Inference
+    - title: AI Efficiency
       icon: 'fa-solid fa-bolt'
       description: Hardware-software co-design across speculative decoding, quantization, and pruning.
       sub_items:
