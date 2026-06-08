@@ -118,21 +118,8 @@ testimonials:
   testimonials_title: News
   testimonials_description:
 
-testimonial_items:
-  - name: "May 2026"
-    content: "Will be joining Cerebras Systems as a Machine Learning Research Engineer Intern, Summer 2026!"
-  - name: "Apr 2026"
-    content: "Awarded the Suzanne McIntosh Master's Research Fellowship by NYU Courant!"
-  - name: "Apr 2026"
-    content: "DREAM-R accepted to ICML 2026!"
-  - name: "Mar 2026"
-    content: "DREAM-R accepted to the ES-Reasoning Workshop at ICLR 2026!"
-  # - name: "Feb 2026"
-  #   content: "I have received the PhD offer from NYU Tandon!"
-  - name: "Jan 2026"
-    content: "CodeQuant accepted to ICLR 2026!"
-  # - name: "May 2025"
-  #   content : "I'm excited to be a part of the AI research team at NYU SAI Lab!"
+# News items are now stored as individual files in _news/
+# Each file: frontmatter with `date:` and `text:`. Section shows the last 6 months.
 
 
 #-------------------------------

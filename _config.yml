@@ -34,6 +34,8 @@ collections:
   gallery:
     output: true
     permalink: /gallery/:slug
+  news:
+    output: false
 #  publications:
 #    output: true
 #    permalink: /publications/:slug

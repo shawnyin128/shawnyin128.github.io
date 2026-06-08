@@ -19,36 +19,62 @@
         <div class="testimonials__slider splide">
           <div class="splide__track">
             <div class="splide__list">
-              {% for testimonial_item in site.data.settings.testimonial_items %}
+              {% assign cutoff_seconds = site.time | date: '%s' | minus: 15552000 %}
+              {% assign all_news = site.news | sort: 'date' | reverse %}
+              {% assign min_count = 4 %}
+
+              {% comment %} Pass 1: count items within the 6-month window {% endcomment %}
+              {% assign within_count = 0 %}
+              {% for news_item in all_news %}
+                {% assign item_seconds = news_item.date | date: '%s' | plus: 0 %}
+                {% if item_seconds >= cutoff_seconds %}
+                  {% assign within_count = within_count | plus: 1 %}
+                {% endif %}
+              {% endfor %}
+
+              {% comment %} If >= min_count within window, show only those. Otherwise fall back to the most-recent min_count regardless of date. {% endcomment %}
+              {% assign use_window = true %}
+              {% if within_count < min_count %}
+                {% assign use_window = false %}
+              {% endif %}
+
+              {% assign rendered = 0 %}
+              {% for news_item in all_news %}
+                {% assign item_seconds = news_item.date | date: '%s' | plus: 0 %}
+                {% assign in_window = false %}
+                {% if item_seconds >= cutoff_seconds %}
+                  {% assign in_window = true %}
+                {% endif %}
+
+                {% assign should_render = false %}
+                {% if use_window and in_window %}
+                  {% assign should_render = true %}
+                {% elsif use_window == false and rendered < min_count %}
+                  {% assign should_render = true %}
+                {% endif %}
+
+                {% if should_render %}
               <div class="testimonial-item splide__slide">
                 <div class="testimonial-content">
 
                   <i class="testimonial-icon fa-solid fa-quote-left"></i>
 
-                  {% if testimonial_item.content %}
-                  <p class="client-text">{{ testimonial_item.content }}</p>
+                  {% if news_item.text %}
+                  <p class="client-text">{{ news_item.text }}</p>
                   {% endif %}
 
                   <div class="client-meta">
-                    {% if testimonial_item.image %}
-                    <div class="image-container">
-                      <img class="client-avatar" src="{{ testimonial_item.image | relative_url }}" alt="{{ testimonial_item.name }}">
-                    </div>
-                    {% endif %}
                     <div class="client-info">
-                      {% if testimonial_item.name %}
                       <h3 class="client-name">
-                        {{ testimonial_item.name }}
+                        {{ news_item.date | date: '%b %Y' }}
                       </h3>
-                      {% endif %}
-                      {% if testimonial_item.designation %}
-                      <p class="client-designation">{{ testimonial_item.designation }}</p>
-                      {% endif %}
                     </div>
                   </div>
 
                 </div>
               </div>
+                  {% assign rendered = rendered | plus: 1 %}
+                {% endif %}
               {% endfor %}
             </div>
           </div>
