@@ -56,7 +56,12 @@
 
   function getMode() {
     var v = localStorage.getItem('color-scheme');
-    return MODES.indexOf(v) >= 0 ? v : 'auto';
+    if (MODES.indexOf(v) >= 0) return v;
+    // No saved preference — fall back to whatever the build set on <body>
+    var body = document.body;
+    if (body && body.classList.contains('scheme--light')) return 'light';
+    if (body && body.classList.contains('scheme--dark')) return 'dark';
+    return 'auto';
   }
 
   function next(mode) {

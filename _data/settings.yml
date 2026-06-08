@@ -2,7 +2,7 @@
 # Site Settings
 title: Shawn Yin
 description: 
-color_scheme: auto # You have the option to choose between three modes: auto, light, and dark. The default mode is set to auto, which means that the color scheme will automatically adapt based on your operating system settings. This way, you can enjoy a personalized experience without having to manually switch between light and dark modes.
+color_scheme: light # auto / light / dark — the initial theme for first-time visitors. Existing visitors who picked a theme via the switch button keep their saved choice (stored in localStorage).
 
 
 #-------------------------------
