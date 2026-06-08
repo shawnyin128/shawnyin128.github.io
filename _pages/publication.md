@@ -12,7 +12,7 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card">
 <div class="publication-title">
-  <a href="https://openreview.net/forum?id=5Ppjdid5wt">
+  <a href="https://arxiv.org/abs/2605.28678">
     <strong>DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution</strong>
   </a>
 </div>
