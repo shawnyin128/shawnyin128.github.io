@@ -8,7 +8,7 @@
 
           <div class="section__info">
             <div class="section__head">
-              <h2 class="section__title"><i class="fa-solid fa-rocket"></i> {{ site.data.settings.projects_settings.projects_title }}</h2>
+              <h2 class="section__title"><i class="fa-solid fa-rocket"></i> Selected Projects</h2>
               <a class="section__link" href="{{ '/projects' | relative_url }}">View all <i class="fa-solid fa-arrow-right-long"></i></a>
             </div>
             {% if site.data.settings.projects_settings.projects_description %}
@@ -17,8 +17,11 @@
           </div>
 
           <div class="row">
-            {% assign sorted = site.projects | sort: 'date' | reverse %}
-            {% for project in sorted limit:4 %}
+            {% assign selected_projects = site.projects | where: 'selected', true | sort: 'selected_order' %}
+            {% if selected_projects.size == 0 %}
+              {% assign selected_projects = site.projects | sort: 'date' | reverse %}
+            {% endif %}
+            {% for project in selected_projects limit:4 %}
             <article class="project col col-6 col-t-12 animate">
               <div class="project__content">
                 <div class="project__info">

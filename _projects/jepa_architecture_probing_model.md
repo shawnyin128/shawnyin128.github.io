@@ -2,7 +2,7 @@
 title: JEPA Architecture Probing Model
 date: 2025-04-27 22:06:35
 description: This project designed a JEPA architecture model with CNN and MLPs as encoder and predictor. The main task is to predict the trajectory of an object in an environment with wall and door.
-label: "Course Project, World Model, CNN"
+label: "Representation Learning, World Model"
 image: '/images/projects/jepa/jepa_cover.png'
 page_cover: 
 ---
