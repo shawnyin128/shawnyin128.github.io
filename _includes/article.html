@@ -1,4 +1,9 @@
-<div class="article col col-6 col-t-12 animate grid__post">
+{% assign article_classes = "article col col-6 col-t-12 animate grid__post" %}
+{% if article_filterable %}
+  {% assign article_classes = article_classes | append: " article-item" %}
+{% endif %}
+
+<div class="{{ article_classes }}"{% if article_filterable %} data-tags="{{ post.tags | join: ',' | escape }}"{% endif %}>
 
   <div class="article__content">
 
@@ -14,18 +19,20 @@
 
     <div class="article__meta">
       {% if post.tags.size >= 1 %}
-      <div class="article-tags__box">
+      <div class="article-tags__box article__meta-item">
         {% for tag in post.tags %}
-          <a href="{{ site.baseurl }}/tags#{{ tag }}" class="article__tag">{{ tag }}</a>
+          {% if article_filterable %}
+          <button type="button" class="article__tag" data-blog-filter="{{ tag | escape }}">{{ tag }}</button>
+          {% else %}
+          <a href="{{ '/blogs/' | relative_url }}?tag={{ tag | uri_escape }}" class="article__tag">{{ tag }}</a>
+          {% endif %}
         {% endfor %}
       </div>
-      &nbsp;&bull;&nbsp;
       {% endif %}
-      <time class="article__date" datetime="{{ post.date | date_to_xmlschema }}">{% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}{{ post.date | date: date_format }}</time>
+      <time class="article__date article__meta-item" datetime="{{ post.date | date_to_xmlschema }}">{% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}{{ post.date | date: date_format }}</time>
       {% assign words = post.content | number_of_words %}
       {% if words >= 1 %}
-        &nbsp;&bull;&nbsp;
-        <span class="article__minutes">
+        <span class="article__minutes article__meta-item">
           {% assign words = post.content | number_of_words %}
           {% if words < 360 %}
             1 min read

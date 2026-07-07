@@ -80,6 +80,7 @@ GEM
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
+    logger (1.7.0)
     mercenary (0.4.0)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
@@ -114,6 +115,8 @@ GEM
       google-protobuf (~> 4.29)
     sass-embedded (1.85.1-riscv64-linux-musl)
       google-protobuf (~> 4.29)
+    sass-embedded (1.85.1-x64-mingw-ucrt)
+      google-protobuf (~> 4.29)
     sass-embedded (1.85.1-x86_64-darwin)
       google-protobuf (~> 4.29)
     sass-embedded (1.85.1-x86_64-linux-android)
@@ -142,6 +145,7 @@ PLATFORMS
   riscv64-linux-gnu
   riscv64-linux-musl
   ruby
+  x64-mingw-ucrt
   x86-linux
   x86-linux-gnu
   x86-linux-musl
@@ -156,6 +160,7 @@ DEPENDENCIES
   jekyll
   jekyll-paginate
   jekyll-sitemap
+  logger
 
 BUNDLED WITH
    2.6.5

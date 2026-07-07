@@ -7,21 +7,21 @@ layout: default
 
   <div class="post-head">
     <h1 class="post-title">{{ page.title | escape }}</h1>
+    {% if page.description %}
+    <p class="post-description entry-description">{{ page.description }}</p>
+    {% endif %}
     <div class="post-meta">
       {% if page.tags.size >= 1 %}
-      <div class="post-tags">
-        Publish in&nbsp;
+      <div class="post-tags post-meta__item">
         {% for tag in page.tags %}
-        <a href="{{ site.baseurl }}/tags#{{ tag }}" class="post__tag">{{ tag }}</a>
+        <a href="{{ '/blogs/' | relative_url }}?tag={{ tag | uri_escape }}" class="post__tag">{{ tag }}</a>
         {% endfor %}
       </div>
-      &nbsp;&bull;&nbsp;
       {% endif %}
-      <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">{% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}{{ page.date | date: date_format }}</time>
+      <time class="post-date post-meta__item" datetime="{{ page.date | date_to_xmlschema }}">{% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}{{ page.date | date: date_format }}</time>
       {% assign words = page.content | number_of_words %}
       {% if words >= 1 %}
-      &nbsp;&bull;&nbsp;
-      <span class="post-minutes">
+      <span class="post-minutes post-meta__item">
       {% if words < 360 %}
         1 min read
       {% else %}
@@ -30,9 +30,6 @@ layout: default
       </span>
       {% endif %}
     </div>
-    {% if page.description %}
-      <p class="post-description">{{ page.description }}</p>
-    {% endif %}
   </div>
 
   {% if page.video_embed %}

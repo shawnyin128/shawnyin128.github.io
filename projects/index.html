@@ -5,60 +5,6 @@ description: An ounce of Action is worth a ton of Theory.
 page_cover: '/images/header/project_cover.jpg'
 ---
 
-<style>
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 24px 0 32px;
-  }
-
-  .filter-chip {
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 1.2;
-    color: var(--text-alt-color);
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: color .2s ease, background-color .2s ease, border-color .2s ease;
-    font-family: inherit;
-  }
-
-  .filter-chip:hover {
-    color: var(--link-color);
-  }
-
-  .filter-chip.is-active {
-    color: var(--background-color);
-    background: var(--text-color);
-    border-color: var(--text-color);
-  }
-
-  .project-item.is-hidden {
-    display: none;
-  }
-
-  .project__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 12px;
-  }
-
-  .project__tag {
-    padding: 4px 8px;
-    font-size: 12px;
-    line-height: 1;
-    color: var(--text-alt-color);
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    white-space: nowrap;
-  }
-</style>
-
 <div class="page container">
 
   <div class="page-head">
@@ -81,12 +27,12 @@ page_cover: '/images/header/project_cover.jpg'
   {% endfor %}
   {% assign tags = raw_tags | split: "," | uniq | sort_natural %}
 
-  <div class="filter-chips" id="filterContainer" role="tablist" aria-label="Filter projects by topic">
-    <button class="filter-chip is-active" data-tag="" onclick="filterProjects(this, '')">All</button>
+  <div class="filter-chips" id="projectFilterContainer" role="tablist" aria-label="Filter projects by topic">
+    <button class="filter-chip is-active" type="button" data-project-filter="">All</button>
     {% for tag in tags %}
       {% assign clean_tag = tag | strip %}
       {% if clean_tag != "" %}
-      <button class="filter-chip" data-tag="{{ clean_tag }}" onclick="filterProjects(this, '{{ clean_tag }}')">{{ clean_tag }}</button>
+      <button class="filter-chip" type="button" data-project-filter="{{ clean_tag | escape }}">{{ clean_tag }}</button>
       {% endif %}
     {% endfor %}
   </div>
@@ -102,7 +48,7 @@ page_cover: '/images/header/project_cover.jpg'
           {% assign project_tags = project.label %}
         {% endif %}
 
-        <article class="project col col-6 col-t-12 animate project-item" data-tags="{{ project_tags }}">
+        <article class="project col col-6 col-t-12 animate project-item" data-tags="{{ project_tags | escape }}">
           <div class="project__content">
             <div class="project__info">
 
@@ -116,12 +62,12 @@ page_cover: '/images/header/project_cover.jpg'
               <div class="project__tags">
                 {% if project.label.first %}
                   {% for tag in project.label %}
-                    <span class="project__tag">{{ tag }}</span>
+                    <button type="button" class="project__tag" data-project-filter="{{ tag | strip | escape }}">{{ tag | strip }}</button>
                   {% endfor %}
                 {% else %}
                   {% assign card_tags = project.label | split: ',' %}
                   {% for tag in card_tags %}
-                    <span class="project__tag">{{ tag | strip }}</span>
+                    <button type="button" class="project__tag" data-project-filter="{{ tag | strip | escape }}">{{ tag | strip }}</button>
                   {% endfor %}
                 {% endif %}
               </div>
@@ -143,23 +89,76 @@ page_cover: '/images/header/project_cover.jpg'
 </div>
 
 <script>
-  function filterProjects(btn, tag) {
-    document.querySelectorAll('.filter-chip').forEach(function (b) {
-      b.classList.remove('is-active');
-    });
-    btn.classList.add('is-active');
+  (function () {
+    var container = document.getElementById('projectFilterContainer');
+    if (!container) return;
 
-    document.querySelectorAll('.project-item').forEach(function (p) {
-      if (!tag) {
-        p.classList.remove('is-hidden');
-        return;
+    var controls = Array.prototype.slice.call(container.querySelectorAll('[data-project-filter]'));
+    var projects = Array.prototype.slice.call(document.querySelectorAll('.project-item'));
+
+    function normalize(value) {
+      return (value || '').trim();
+    }
+
+    function setActive(tag) {
+      var hasActive = false;
+
+      controls.forEach(function (button) {
+        var buttonTag = normalize(button.getAttribute('data-project-filter'));
+        var isActive = buttonTag === tag;
+        button.classList.toggle('is-active', isActive);
+        hasActive = hasActive || isActive;
+      });
+
+      if (!hasActive && controls[0]) {
+        controls[0].classList.add('is-active');
       }
-      var pTags = (p.getAttribute('data-tags') || '').split(',').map(function (t) { return t.trim(); });
-      if (pTags.indexOf(tag) !== -1) {
-        p.classList.remove('is-hidden');
+    }
+
+    function filterProjects(tag) {
+      setActive(tag);
+
+      projects.forEach(function (project) {
+        if (!tag) {
+          project.classList.remove('is-hidden');
+          return;
+        }
+
+        var projectTags = (project.getAttribute('data-tags') || '').split(',').map(function (item) {
+          return item.trim();
+        });
+
+        project.classList.toggle('is-hidden', projectTags.indexOf(tag) === -1);
+      });
+    }
+
+    function updateUrl(tag) {
+      if (!window.history || !window.history.replaceState) return;
+
+      var url = new URL(window.location.href);
+      if (tag) {
+        url.searchParams.set('tag', tag);
       } else {
-        p.classList.add('is-hidden');
+        url.searchParams.delete('tag');
       }
+
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    }
+
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest && event.target.closest('[data-project-filter]');
+      if (!button) return;
+      if (!container.contains(button) && !button.closest('.project-item')) return;
+
+      event.preventDefault();
+      var selectedTag = normalize(button.getAttribute('data-project-filter'));
+      filterProjects(selectedTag);
+      updateUrl(selectedTag);
     });
-  }
+
+    var initialTag = normalize(new URLSearchParams(window.location.search).get('tag'));
+    if (initialTag) {
+      filterProjects(initialTag);
+    }
+  })();
 </script>

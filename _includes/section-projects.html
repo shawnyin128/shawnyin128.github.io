@@ -29,6 +29,20 @@
                   {% if project.description %}
                     <div class="project__description">{{ project.description }}</div>
                   {% endif %}
+                  {% if project.label %}
+                  <div class="project__tags">
+                    {% if project.label.first %}
+                      {% for tag in project.label %}
+                      <a class="project__tag" href="{{ '/projects/' | relative_url }}?tag={{ tag | strip | uri_escape }}">{{ tag | strip }}</a>
+                      {% endfor %}
+                    {% else %}
+                      {% assign card_tags = project.label | split: ',' %}
+                      {% for tag in card_tags %}
+                      <a class="project__tag" href="{{ '/projects/' | relative_url }}?tag={{ tag | strip | uri_escape }}">{{ tag | strip }}</a>
+                      {% endfor %}
+                    {% endif %}
+                  </div>
+                  {% endif %}
                 </div>
                 {% if project.image %}
                 <a href="{{ project.url | relative_url }}" class="project__image">

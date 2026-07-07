@@ -3,11 +3,194 @@
     <channel>
         <title>Shawn Yin</title>
         <description></description>
-        <link>http://localhost:4001/</link>
-        <atom:link href="http://localhost:4001/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Mon, 08 Jun 2026 03:22:54 -0400</pubDate>
-        <lastBuildDate>Mon, 08 Jun 2026 03:22:54 -0400</lastBuildDate>
+        <link>https://shawnyin128.github.io/</link>
+        <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+        <pubDate>Mon, 06 Jul 2026 22:01:01 -0400</pubDate>
+        <lastBuildDate>Mon, 06 Jul 2026 22:01:01 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
+        
+            <item>
+                <title>From SFT to RL: The Two Degrees of Freedom</title>
+                <description>&lt;p&gt;Many people, when first trying to understand Supervised Fine-Tuning (SFT), think of it as another training stage after pretraining: pretraining is self-supervised (SSL), while SFT is supervised. There is nothing wrong with this description, but I have always felt that there is a detail worth thinking through: &lt;strong&gt;if SFT is still using cross-entropy loss to predict the next token, then how exactly is it different from SSL?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This blog is an attempt to answer that question. Instead of starting by saying what SFT is, we will first &lt;strong&gt;take it apart&lt;/strong&gt;: how the prompt and response are organized, &lt;strong&gt;why the loss is usually computed only on the response&lt;/strong&gt;, and how these “reference answers” enter the training objective in the first place.&lt;/p&gt;
+
+&lt;h2 id=&quot;sft-is-language-modeling-with-a-mask&quot;&gt;SFT Is Language Modeling with a Mask&lt;/h2&gt;
+
+&lt;p&gt;SFT is still language modeling. More specifically, it is still &lt;strong&gt;autoregressive next-token prediction&lt;/strong&gt;: given the preceding tokens, predict the next token. For a sequence of text $(x_1,\dots,x_T)$, the model factorizes the probability of the whole sequence into a product of conditional probabilities at each step:&lt;/p&gt;
+
+\[p_\theta(x_1,\dots,x_T)
+= \prod_{t=1}^{T} p_\theta(x_t\mid x_{&amp;lt;t})\]
+
+&lt;p&gt;This factorization matters because it tells us what a language model is actually trained to do: &lt;strong&gt;each token is predicted conditioned on its prefix&lt;/strong&gt;. The log probability of the full sequence is the sum of these per-token log probabilities.&lt;/p&gt;
+
+&lt;p&gt;SFT keeps the same training form, but changes &lt;strong&gt;how the training example is organized&lt;/strong&gt;. A typical SFT example is split into a &lt;strong&gt;prompt $x$ and a response $y$&lt;/strong&gt;. If we concatenate the two, it is still just a sequence of text. If we trained it exactly like ordinary language modeling, the model would be modeling the full joint distribution:&lt;/p&gt;
+
+\[p_\theta(x,y)
+= p_\theta(x),p_\theta(y\mid x)\]
+
+&lt;p&gt;&lt;strong&gt;Masking out the loss on the prompt&lt;/strong&gt; means we no longer ask the model to explain $p(x)$; we only ask it to explain $y$ given $x$. Therefore, SFT learns the &lt;strong&gt;conditional distribution $p(y\mid x)$&lt;/strong&gt;, not the full joint distribution $p(x,y)$. This also matches how the model is used in practice: the prompt is provided by the user, and the model needs to learn how to respond after that prompt.&lt;/p&gt;
+
+&lt;p&gt;So where does the “supervision” come from? Not from the loss function itself, but from the &lt;strong&gt;source of the target tokens&lt;/strong&gt;. Pretraining also has labels, but those labels come from the corpus itself: the next word is already written in the text. In SFT, for the same prompt, what counts as a good answer, and which answer the model should learn from, is specified by a human, a stronger model, or some data generation pipeline. In other words, &lt;strong&gt;the supervision is in the data, not in the mathematical form&lt;/strong&gt;. The loss has not changed; what has changed is who decides the answer. This is why pretraining, SFT, and instruction tuning may look like different stages, but at the bottom they are all still next-token prediction. The main differences are the &lt;strong&gt;data source&lt;/strong&gt; and the &lt;strong&gt;loss mask&lt;/strong&gt; [1].&lt;/p&gt;
+
+&lt;h2 id=&quot;sft-fits-the-reference-distribution&quot;&gt;SFT Fits the Reference Distribution&lt;/h2&gt;
+
+&lt;p&gt;SFT is a clean way to &lt;strong&gt;align the training objective with the generation setting&lt;/strong&gt;: given a prompt, learn to produce the kind of response we want. But the same formulation also shows its &lt;strong&gt;mathematical ceiling&lt;/strong&gt;. Once the training signal comes from a &lt;strong&gt;fixed reference distribution&lt;/strong&gt;, SFT can only move the model toward that distribution.&lt;/p&gt;
+
+&lt;p&gt;Denote the &lt;strong&gt;reference distribution&lt;/strong&gt; behind the training data as $q(y\mid x)$. Here, $q$ may be induced by human annotators, a stronger model, or some data generation pipeline. What SFT does is &lt;strong&gt;minimize the negative log-likelihood&lt;/strong&gt; on samples drawn from this reference distribution:&lt;/p&gt;
+
+\[\mathcal{L}(\theta)=\mathbb{E}_{y\sim q}\big[-\log p_\theta(y\mid x)\big]\]
+
+&lt;p&gt;Expanded autoregressively, &lt;strong&gt;the loss on the response is a sum over tokens&lt;/strong&gt;:&lt;/p&gt;
+
+\[-\log p_\theta(y\mid x)=-\log\prod_{t}p_\theta(a_t\mid x,a_{&amp;lt;t})=-\sum_{t}\log p_\theta(a_t\mid x,a_{&amp;lt;t})\]
+
+&lt;p&gt;Here, $a_t$ is the $t$-th token in the response, and $a_{&amp;lt;t}$ is the part of the response that has already appeared before it. We will use this &lt;strong&gt;token-level form&lt;/strong&gt; when looking at the gradient later. For now, treating $p_\theta(y\mid x)$ as a whole makes the objective of SFT easier to see.&lt;/p&gt;
+
+&lt;p&gt;Now apply a standard &lt;strong&gt;KL decomposition&lt;/strong&gt; to this objective:&lt;/p&gt;
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;KL Decomposition Derivation&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;Inside the $\log$, multiply by $1=\dfrac{q}{q}$:&lt;/p&gt;
+
+\[-\log p_\theta=-\log\!\Big(p_\theta\cdot\tfrac{q}{q}\Big)=-\log\!\Big(\tfrac{p_\theta}{q}\cdot q\Big)\]
+
+  &lt;p&gt;Use $\log(ab)=\log a+\log b$ to split the expression:&lt;/p&gt;
+
+\[-\log\!\Big(\tfrac{p_\theta}{q}\cdot q\Big)=-\log\tfrac{p_\theta}{q}-\log q\]
+
+  &lt;p&gt;Flip the ratio in the first term:&lt;/p&gt;
+
+\[=\log\tfrac{q}{p_\theta}-\log q\]
+
+  &lt;p&gt;Substitute this back into the expectation:&lt;/p&gt;
+
+\[\mathcal{L}(\theta)=\mathbb{E}_{y\sim q}\Big[\log\tfrac{q}{p_\theta}\Big]+\mathbb{E}_{y\sim q}\big[-\log q\big]\]
+
+  &lt;p&gt;The first term is the KL divergence, and the second term is the entropy of $q$:&lt;/p&gt;
+
+\[\mathcal{L}(\theta)=\underbrace{\mathbb{E}_{y\sim q}\Big[\log\tfrac{q}{p_\theta}\Big]}_{\mathrm{KL}(q\,\|\,p_\theta)}+\underbrace{\mathbb{E}_{y\sim q}\big[-\log q\big]}_{H(q)}\]
+
+  &lt;p&gt;$H(q)$ is independent of $\theta$; $\mathrm{KL}\ge 0$, and it is zero only when $p_\theta=q$.&lt;/p&gt;
+
+&lt;/details&gt;
+
+\[\mathcal{L}(\theta)=\mathrm{KL}(q\,\|\,p_\theta)+H(q)\]
+
+&lt;p&gt;$H(q)$ is the entropy of the reference distribution itself, so &lt;strong&gt;it does not depend on the model parameters $\theta$&lt;/strong&gt;. In other words, &lt;strong&gt;minimizing the SFT loss is equivalent to making $p_\theta$ as close as possible to the reference distribution $q$&lt;/strong&gt;. In the ideal case, &lt;strong&gt;the optimum is $p_\theta=q$&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;The meaning is simple: if the training signal comes only from this reference distribution, then &lt;strong&gt;SFT is trying to fit that distribution&lt;/strong&gt;. It is &lt;strong&gt;not directly searching for a policy that is “better than the reference distribution”&lt;/strong&gt;; it is fitting the distribution of answers that appear under $q$. This also explains the connection between &lt;strong&gt;SFT and knowledge distillation&lt;/strong&gt; [2]. Mathematically, both optimize cross-entropy against some reference distribution $q$. The difference is where that reference distribution comes from: if it comes from a teacher model, we usually call it distillation; if it comes from human-written answers or filtered data, we call it SFT. The names are different, but the optimization objectives are very close.&lt;/p&gt;
+
+&lt;p&gt;This perspective is also useful when reading experiments. Many papers use a stronger large model to generate data, then SFT a smaller model on that data, and finally report improvements on benchmarks. There may well be methodological contributions in such work, but the first thing to acknowledge is that &lt;strong&gt;this pipeline is essentially learning from a teacher-induced reference distribution&lt;/strong&gt;. A natural baseline should be &lt;strong&gt;“directly distill the same teacher.”&lt;/strong&gt; If a method cannot beat that baseline, the gain may be coming mostly from the data source, rather than from the new method itself.&lt;/p&gt;
+
+&lt;h2 id=&quot;breaking-sfts-ceiling&quot;&gt;Breaking SFT’s Ceiling&lt;/h2&gt;
+
+&lt;p&gt;In Section 2, we saw that SFT is a clean training paradigm: it &lt;strong&gt;aligns the training objective with the generation setting&lt;/strong&gt;, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a &lt;strong&gt;fixed reference distribution $q$&lt;/strong&gt;, the model can only be pushed toward $q$.&lt;/p&gt;
+
+&lt;p&gt;To break that ceiling, it is not enough to say “train longer” or “use better data.” The mathematical question is: &lt;strong&gt;which parts of the SFT update are fixed by construction, and what extra degrees of freedom do we get if we relax them?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The gradient makes this visible. The SFT loss is:&lt;/p&gt;
+
+\[\mathcal{L}(\theta)=\mathbb{E}_{y\sim q}\Big[-\sum_t \log p_\theta(a_t\mid x,a_{&amp;lt;t})\Big]\]
+
+&lt;p&gt;Taking the gradient with respect to $\theta$ ($q$ does not depend on $\theta$, so the gradient passes through the expectation and the sum):&lt;/p&gt;
+
+\[\nabla_\theta\mathcal{L}=-\,\mathbb{E}_{y\sim q}\Big[\sum_t \nabla_\theta\log p_\theta(a_t\mid x,a_{&amp;lt;t})\Big]\]
+
+&lt;p&gt;This gradient makes the SFT update explicit: every reference token contributes a term $\nabla_\theta\log p_\theta(a_t\mid\cdot)$. Under gradient descent, the update direction increases the probability of these reference tokens. More importantly, &lt;strong&gt;the coefficient in front of every term is the same&lt;/strong&gt;: no weighting, and no negative sign.&lt;/p&gt;
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;Why gradient descent increases the probability of a reference token&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;A single token contributes $\ell_t=-\log p_\theta(a_t)$ to the loss. Gradient descent moves the parameters in the direction that reduces the loss.&lt;/p&gt;
+
+  &lt;ul&gt;
+    &lt;li&gt;Reducing $\ell_t=-\log p_\theta(a_t)$ is equivalent to increasing $\log p_\theta(a_t)$, which means increasing the probability $p_\theta(a_t)$.&lt;/li&gt;
+    &lt;li&gt;In terms of signs, this term’s gradient is $-\nabla_\theta\log p_\theta(a_t)$. Gradient descent follows $-\nabla_\theta\mathcal{L}$, so this term becomes $+\nabla_\theta\log p_\theta(a_t)$.&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;p&gt;The negative sign in $-\log$ cancels with the negative sign in gradient descent, so the update direction increases the probability of that token.&lt;/p&gt;
+
+&lt;/details&gt;
+
+&lt;p&gt;So if we want to treat different tokens differently, for example learning more from good answers and pushing bad answers down, we need to introduce a coefficient $w_t$ in front of each term:&lt;/p&gt;
+
+\[\nabla_\theta\mathcal{L}=-\,\mathbb{E}_{y\sim q}\Big[\sum_t w_t\,\nabla_\theta\log p_\theta(a_t\mid x,a_{&amp;lt;t})\Big]\]
+
+&lt;p&gt;Ordinary SFT is the special case where &lt;strong&gt;$w_t\equiv1$&lt;/strong&gt;. This 1 is not an extra term we added; it is the default weight already present in the original gradient.&lt;/p&gt;
+
+&lt;p&gt;From here, the path beyond SFT becomes clear: relax the things that were fixed. One is &lt;strong&gt;the weight in front of each token&lt;/strong&gt;; the other is &lt;strong&gt;where the samples come from&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;content-callout content-callout--insight&quot;&gt;
+
+  &lt;div class=&quot;content-callout__row&quot;&gt;
+    &lt;p class=&quot;content-callout__label&quot;&gt;&lt;strong&gt;Fixed weights&lt;/strong&gt;&lt;/p&gt;
+    &lt;p&gt;SFT treats all reference tokens equally. The weight in front of every token is $1$, so the update can only increase the probability of those tokens. To express preference, the fixed $1$ has to become a variable weight $w_t$: good directions get larger weights, bad directions get smaller weights, or are even pushed down.&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;content-callout__row&quot;&gt;
+    &lt;p class=&quot;content-callout__label&quot;&gt;&lt;strong&gt;Fixed sampling source&lt;/strong&gt;&lt;/p&gt;
+    &lt;p&gt;SFT samples come from the reference distribution $q$. If the training data always comes from $q$, the model is still only fitting that reference distribution. To let the model improve based on its own behavior, samples have to come from the model itself: $y\sim p_\theta$.&lt;/p&gt;
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;p&gt;But letting the model generate its own samples is not enough. If it simply learns from whatever it generates, it is just imitating itself; there is no new learning signal. We still need to score those outputs, amplify the good directions, and suppress the bad ones.&lt;/p&gt;
+
+&lt;p&gt;Only when these two degrees of freedom are combined do we get the usual policy-gradient picture in RL [3]:&lt;/p&gt;
+
+&lt;table class=&quot;policy-matrix&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Update weight / Sampling source&lt;/th&gt;
+      &lt;th&gt;Sample $y\sim q$ (reference distribution)&lt;/th&gt;
+      &lt;th&gt;Sample $y\sim p_\theta$ (model itself)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;$w_t=1$&lt;/td&gt;
+      &lt;td&gt;SFT&lt;/td&gt;
+      &lt;td&gt;Degenerate: self-imitation with no signal&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;$w_t=$ reward&lt;/td&gt;
+      &lt;td&gt;Weighted behavior cloning: still limited by $q$&lt;/td&gt;
+      &lt;td&gt;Policy gradient: on-policy + reward&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The difference between the bottom-right cell and SFT is not merely that we “added reward.” The objective has changed from &lt;strong&gt;fitting the reference distribution $q$&lt;/strong&gt; to &lt;strong&gt;making the model’s own outputs receive higher reward&lt;/strong&gt;, i.e. optimizing \(\mathbb{E}_{y\sim p_\theta}[R]\). Once the objective changes, the sampling distribution and the weights in front of the gradient change together.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;SFT is not mysterious. It is still next-token prediction; during training, we mask out the prompt and model the response conditionally. Written as an objective, it is fitting the reference distribution $q(y\mid x)$. In that sense, &lt;strong&gt;SFT is behavior cloning&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Its ceiling comes from the same place: in the gradient, every reference token has default weight $1$, so SFT can only increase the probability of reference tokens; and because the samples come from the reference distribution, the objective is also bounded by that distribution. Later methods such as policy gradient [3], PPO [4], DPO [5], and GRPO [6] may look different on the surface, but they all have to answer the same two questions: &lt;strong&gt;where do the weights come from, and where do the samples come from?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol class=&quot;references-list&quot;&gt;
+  &lt;li&gt;Ouyang, Long, et al. “&lt;a href=&quot;https://arxiv.org/abs/2203.02155&quot;&gt;Training Language Models to Follow Instructions with Human Feedback&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 4 Mar. 2022.&lt;/li&gt;
+  &lt;li&gt;Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. “&lt;a href=&quot;https://arxiv.org/abs/1503.02531&quot;&gt;Distilling the Knowledge in a Neural Network&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 9 Mar. 2015.&lt;/li&gt;
+  &lt;li&gt;Sutton, Richard S., et al. “&lt;a href=&quot;https://proceedings.neurips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html&quot;&gt;Policy Gradient Methods for Reinforcement Learning with Function Approximation&lt;/a&gt;.” &lt;em&gt;Advances in Neural Information Processing Systems&lt;/em&gt;, vol. 12, 1999.&lt;/li&gt;
+  &lt;li&gt;Schulman, John, et al. “&lt;a href=&quot;https://arxiv.org/abs/1707.06347&quot;&gt;Proximal Policy Optimization Algorithms&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 20 July 2017.&lt;/li&gt;
+  &lt;li&gt;Rafailov, Rafael, et al. “&lt;a href=&quot;https://arxiv.org/abs/2305.18290&quot;&gt;Direct Preference Optimization: Your Language Model Is Secretly a Reward Model&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 29 May 2023.&lt;/li&gt;
+  &lt;li&gt;Shao, Zhihong, et al. “&lt;a href=&quot;https://arxiv.org/abs/2402.03300&quot;&gt;DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 5 Feb. 2024.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+                <pubDate>Mon, 06 Jul 2026 21:00:00 -0400</pubDate>
+                <link>https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft</link>
+                <guid isPermaLink="true">https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft</guid>
+                
+                <category>LLM</category>
+                
+                <category>Post-Training</category>
+                
+                
+            </item>
         
     </channel>
 </rss>

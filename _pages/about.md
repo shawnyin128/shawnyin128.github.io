@@ -52,6 +52,11 @@ page_cover: '/images/header/about_cover.jpg'
 
 <h2>Professional Experience</h2>
 <dl class="cv-grid">
+<dt>Jul 2026 – Now</dt>
+<dd>
+<strong>Machine Learning Research Engineer</strong>, <a href="https://www.cerebras.ai/" target="_blank">Cerebras Systems</a>, Internship, Canada<br>
+</dd>
+
 <dt>Aug 2023 – Jul 2024</dt>
 <dd>
 <strong>Software Developer</strong>, <a href="https://en.hundsun.com/" target="_blank">Hundsun Technology</a>, Full-time, China<br>

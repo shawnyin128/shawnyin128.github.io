@@ -15,17 +15,101 @@ page_cover: '/images/header/blog_cover.jpg'
     {% endif %}
   </div>
 
+  {% assign raw_tags = "" %}
+  {% for post in site.posts %}
+    {% if post.tags.size >= 1 %}
+      {% assign t = post.tags | join: "," %}
+      {% assign raw_tags = raw_tags | append: "," | append: t %}
+    {% endif %}
+  {% endfor %}
+  {% assign tags = raw_tags | split: "," | uniq | sort_natural %}
+
+  <div class="filter-chips" id="blogFilterContainer" role="tablist" aria-label="Filter blogs by topic">
+    <button class="filter-chip is-active" type="button" data-blog-filter="">All</button>
+    {% for tag in tags %}
+      {% assign clean_tag = tag | strip %}
+      {% if clean_tag != "" %}
+      <button class="filter-chip" type="button" data-blog-filter="{{ clean_tag | escape }}">{{ clean_tag }}</button>
+      {% endif %}
+    {% endfor %}
+  </div>
+
   <div class="page__blog">
-    <div class="row grid">
+    <div class="grid">
     {% if site.posts.size > 0 %}
-    {% for post in paginator.posts offset:0 %}
-      {% include article.html %}
+    {% for post in site.posts %}
+      {% include article-list.html filterable=true %}
     {% endfor %}
     {% endif %}
     </div>
-
-    {% include pagination.html %}
   </div>
 
 </div>
 <!-- end page -->
+
+<script>
+  (function () {
+    var container = document.getElementById('blogFilterContainer');
+    if (!container) return;
+
+    var controls = Array.prototype.slice.call(container.querySelectorAll('[data-blog-filter]'));
+    var articles = Array.prototype.slice.call(document.querySelectorAll('.article-item'));
+
+    function normalize(value) {
+      return (value || '').trim();
+    }
+
+    function setActive(tag) {
+      controls.forEach(function (button) {
+        var buttonTag = normalize(button.getAttribute('data-blog-filter'));
+        button.classList.toggle('is-active', buttonTag === tag);
+      });
+    }
+
+    function filterArticles(tag) {
+      setActive(tag);
+
+      articles.forEach(function (article) {
+        if (!tag) {
+          article.classList.remove('is-hidden');
+          return;
+        }
+
+        var articleTags = (article.getAttribute('data-tags') || '').split(',').map(function (item) {
+          return item.trim();
+        });
+
+        article.classList.toggle('is-hidden', articleTags.indexOf(tag) === -1);
+      });
+    }
+
+    function updateUrl(tag) {
+      if (!window.history || !window.history.replaceState) return;
+
+      var url = new URL(window.location.href);
+      if (tag) {
+        url.searchParams.set('tag', tag);
+      } else {
+        url.searchParams.delete('tag');
+      }
+
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    }
+
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest && event.target.closest('[data-blog-filter]');
+      if (!button) return;
+      if (!container.contains(button) && !button.closest('.article-item')) return;
+
+      event.preventDefault();
+      var selectedTag = normalize(button.getAttribute('data-blog-filter'));
+      filterArticles(selectedTag);
+      updateUrl(selectedTag);
+    });
+
+    var initialTag = normalize(new URLSearchParams(window.location.search).get('tag'));
+    if (initialTag) {
+      filterArticles(initialTag);
+    }
+  })();
+</script>
