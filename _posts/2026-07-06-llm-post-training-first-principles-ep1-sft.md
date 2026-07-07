@@ -27,7 +27,7 @@ SFT keeps the same training form, but changes **how the training example is orga
 
 $$
 p_\theta(x,y)
-= p_\theta(x),p_\theta(y\mid x)
+= p_\theta(x)p_\theta(y\mid x)
 $$
 
 **Masking out the loss on the prompt** means we no longer ask the model to explain $p(x)$; we only ask it to explain $y$ given $x$. Therefore, SFT learns the **conditional distribution $p(y\mid x)$**, not the full joint distribution $p(x,y)$. This also matches how the model is used in practice: the prompt is provided by the user, and the model needs to learn how to respond after that prompt.
@@ -88,7 +88,7 @@ This perspective is also useful when reading experiments. Many papers use a stro
 
 ## Breaking SFT's Ceiling
 
-In Section 2, we saw that SFT is a clean training paradigm: it **aligns the training objective with the generation setting**, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a **fixed reference distribution $q$**, the model can only be pushed toward $q$.
+In previous section, we saw that SFT is a clean training paradigm: it **aligns the training objective with the generation setting**, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a **fixed reference distribution $q$**, the model can only be pushed toward $q$.
 
 To break that ceiling, it is not enough to say “train longer” or “use better data.” The mathematical question is: **which parts of the SFT update are fixed by construction, and what extra degrees of freedom do we get if we relax them?**
 

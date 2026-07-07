@@ -9,7 +9,7 @@
   <title>From SFT to RL: The Two Degrees of Freedom</title>
   <meta name='description' content='Why SFT is reference-distribution fitting, and how changing token weights and sampling turns it into RL.'>
 
-  <link rel="canonical" href="https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft">
+  <link rel="canonical" href="http://localhost:4000/blogs/post-training-from-first-principles-sft">
   <link rel="alternate" type="application/rss+xml" title="Shawn Yin" href="/feed.xml">
 
   <!-- Twitter Card -->
@@ -331,7 +331,7 @@
 <p>SFT keeps the same training form, but changes <strong>how the training example is organized</strong>. A typical SFT example is split into a <strong>prompt $x$ and a response $y$</strong>. If we concatenate the two, it is still just a sequence of text. If we trained it exactly like ordinary language modeling, the model would be modeling the full joint distribution:</p>
 
 \[p_\theta(x,y)
-= p_\theta(x),p_\theta(y\mid x)\]
+= p_\theta(x)p_\theta(y\mid x)\]
 
 <p><strong>Masking out the loss on the prompt</strong> means we no longer ask the model to explain $p(x)$; we only ask it to explain $y$ given $x$. Therefore, SFT learns the <strong>conditional distribution $p(y\mid x)$</strong>, not the full joint distribution $p(x,y)$. This also matches how the model is used in practice: the prompt is provided by the user, and the model needs to learn how to respond after that prompt.</p>
 
@@ -390,7 +390,7 @@
 
 <h2 id="breaking-sfts-ceiling">Breaking SFT’s Ceiling</h2>
 
-<p>In Section 2, we saw that SFT is a clean training paradigm: it <strong>aligns the training objective with the generation setting</strong>, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a <strong>fixed reference distribution $q$</strong>, the model can only be pushed toward $q$.</p>
+<p>In previous section, we saw that SFT is a clean training paradigm: it <strong>aligns the training objective with the generation setting</strong>, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a <strong>fixed reference distribution $q$</strong>, the model can only be pushed toward $q$.</p>
 
 <p>To break that ceiling, it is not enough to say “train longer” or “use better data.” The mathematical question is: <strong>which parts of the SFT update are fixed by construction, and what extra degrees of freedom do we get if we relax them?</strong></p>
 
@@ -491,21 +491,21 @@
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=From%20SFT%20to%20RL:%20The%20Two%20Degrees%20of%20Freedom&url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft"
+        href="https://twitter.com/intent/tweet?text=From%20SFT%20to%20RL:%20The%20Two%20Degrees%20of%20Freedom&url=http://localhost:4000/blogs/post-training-from-first-principles-sft"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="fa-brands fa-x-twitter"></i></a>
     </li>
     <li class="share__item">
-      <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft"
+      <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/blogs/post-training-from-first-principles-sft"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Facebook" rel="nofollow"><i class="fa-brands fa-facebook"></i></a>
     </li>
     <li class="share__item">
-      <a class="share__link share__linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft&title=From%20SFT%20to%20RL:%20The%20Two%20Degrees%20of%20Freedom&summary=Why%20SFT%20is%20reference-distribution%20fitting,%20and%20how%20changing%20token%20weights%20and%20sampling%20turns%20it%20into%20RL.&source="
+      <a class="share__link share__linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/blogs/post-training-from-first-principles-sft&title=From%20SFT%20to%20RL:%20The%20Two%20Degrees%20of%20Freedom&summary=Why%20SFT%20is%20reference-distribution%20fitting,%20and%20how%20changing%20token%20weights%20and%20sampling%20turns%20it%20into%20RL.&source="
       onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn" rel="nofollow"><i class="fa-brands fa-linkedin"></i></a>
     </li>
     <li class="share__item">
-      <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft&amp;media=https://shawnyin128.github.io&amp;description=From%20SFT%20to%20RL:%20The%20Two%20Degrees%20of%20Freedom"
+      <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/blogs/post-training-from-first-principles-sft&amp;media=http://localhost:4000&amp;description=From%20SFT%20to%20RL:%20The%20Two%20Degrees%20of%20Freedom"
       onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"
       rel="nofollow"><i class="fa-brands fa-pinterest"></i></a>
     </li>
