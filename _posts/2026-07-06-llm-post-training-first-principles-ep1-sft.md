@@ -39,7 +39,7 @@ So where does the “supervision” come from? Not from the loss function itself
 
 SFT is a clean way to **align the training objective with the generation setting**: given a prompt, learn to produce the kind of response we want. But the same formulation also shows its **mathematical ceiling**. Once the training signal comes from a **fixed reference distribution**, SFT can only move the model toward that distribution.
 
-Denote the **reference distribution** behind the training data as $q(y\mid x)$. Here, $q$ may be induced by human annotators, a stronger model, or some data generation pipeline. What SFT does is **minimize the negative log-likelihood** on samples drawn from this reference distribution:
+Denote the **reference distribution** behind the training data as $q(y\mid x)$. Here, $q$ may be induced by human annotators, a stronger model, or some data generation pipeline. What SFT does is **minimize the negative log-likelihood (hard-label cross entropy)** on samples drawn from this reference distribution:
 
 $$\mathcal{L}(\theta)=\mathbb{E}_{y\sim q}\big[-\log p_\theta(y\mid x)\big]$$
 
