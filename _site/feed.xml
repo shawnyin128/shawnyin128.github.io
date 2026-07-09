@@ -3,10 +3,10 @@
     <channel>
         <title>Shawn Yin</title>
         <description></description>
-        <link>http://localhost:4000/</link>
-        <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Mon, 06 Jul 2026 22:27:28 -0400</pubDate>
-        <lastBuildDate>Mon, 06 Jul 2026 22:27:28 -0400</lastBuildDate>
+        <link>https://shawnyin128.github.io/</link>
+        <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+        <pubDate>Wed, 08 Jul 2026 21:44:49 -0400</pubDate>
+        <lastBuildDate>Wed, 08 Jul 2026 21:44:49 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
         
             <item>
@@ -16,6 +16,8 @@
 &lt;p&gt;This blog is an attempt to answer that question. Instead of starting by saying what SFT is, we will first &lt;strong&gt;take it apart&lt;/strong&gt;: how the prompt and response are organized, &lt;strong&gt;why the loss is usually computed only on the response&lt;/strong&gt;, and how these “reference answers” enter the training objective in the first place.&lt;/p&gt;
 
 &lt;h2 id=&quot;sft-is-language-modeling-with-a-mask&quot;&gt;SFT Is Language Modeling with a Mask&lt;/h2&gt;
+
+&lt;p class=&quot;section-description&quot;&gt;The first confusion is small but important: if both SSL and SFT predict the next token, where does the supervision actually enter?&lt;/p&gt;
 
 &lt;p&gt;SFT is still language modeling. More specifically, it is still &lt;strong&gt;autoregressive next-token prediction&lt;/strong&gt;: given the preceding tokens, predict the next token. For a sequence of text $(x_1,\dots,x_T)$, the model factorizes the probability of the whole sequence into a product of conditional probabilities at each step:&lt;/p&gt;
 
@@ -35,9 +37,11 @@
 
 &lt;h2 id=&quot;sft-fits-the-reference-distribution&quot;&gt;SFT Fits the Reference Distribution&lt;/h2&gt;
 
+&lt;p class=&quot;section-description&quot;&gt;Once the mask is clear, the next question is what SFT is optimizing toward. Writing the loss against a reference distribution makes that target visible.&lt;/p&gt;
+
 &lt;p&gt;SFT is a clean way to &lt;strong&gt;align the training objective with the generation setting&lt;/strong&gt;: given a prompt, learn to produce the kind of response we want. But the same formulation also shows its &lt;strong&gt;mathematical ceiling&lt;/strong&gt;. Once the training signal comes from a &lt;strong&gt;fixed reference distribution&lt;/strong&gt;, SFT can only move the model toward that distribution.&lt;/p&gt;
 
-&lt;p&gt;Denote the &lt;strong&gt;reference distribution&lt;/strong&gt; behind the training data as $q(y\mid x)$. Here, $q$ may be induced by human annotators, a stronger model, or some data generation pipeline. What SFT does is &lt;strong&gt;minimize the negative log-likelihood&lt;/strong&gt; on samples drawn from this reference distribution:&lt;/p&gt;
+&lt;p&gt;Denote the &lt;strong&gt;reference distribution&lt;/strong&gt; behind the training data as $q(y\mid x)$. Here, $q$ may be induced by human annotators, a stronger model, or some data generation pipeline. What SFT does is &lt;strong&gt;minimize the negative log-likelihood (hard-label cross entropy)&lt;/strong&gt; on samples drawn from this reference distribution:&lt;/p&gt;
 
 \[\mathcal{L}(\theta)=\mathbb{E}_{y\sim q}\big[-\log p_\theta(y\mid x)\big]\]
 
@@ -85,6 +89,8 @@
 &lt;p&gt;This perspective is also useful when reading experiments. Many papers use a stronger large model to generate data, then SFT a smaller model on that data, and finally report improvements on benchmarks. There may well be methodological contributions in such work, but the first thing to acknowledge is that &lt;strong&gt;this pipeline is essentially learning from a teacher-induced reference distribution&lt;/strong&gt;. A natural baseline should be &lt;strong&gt;“directly distill the same teacher.”&lt;/strong&gt; If a method cannot beat that baseline, the gain may be coming mostly from the data source, rather than from the new method itself.&lt;/p&gt;
 
 &lt;h2 id=&quot;breaking-sfts-ceiling&quot;&gt;Breaking SFT’s Ceiling&lt;/h2&gt;
+
+&lt;p class=&quot;section-description&quot;&gt;If fitting the reference distribution is the ceiling, the escape route has to show up in the update itself. The gradient tells us which knobs can be loosened.&lt;/p&gt;
 
 &lt;p&gt;In previous section, we saw that SFT is a clean training paradigm: it &lt;strong&gt;aligns the training objective with the generation setting&lt;/strong&gt;, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a &lt;strong&gt;fixed reference distribution $q$&lt;/strong&gt;, the model can only be pushed toward $q$.&lt;/p&gt;
 
@@ -182,8 +188,8 @@
 &lt;/ol&gt;
 </description>
                 <pubDate>Mon, 06 Jul 2026 21:00:00 -0400</pubDate>
-                <link>http://localhost:4000/blogs/post-training-from-first-principles-sft</link>
-                <guid isPermaLink="true">http://localhost:4000/blogs/post-training-from-first-principles-sft</guid>
+                <link>https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft</link>
+                <guid isPermaLink="true">https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft</guid>
                 
                 <category>LLM</category>
                 

@@ -14,6 +14,8 @@ This blog is an attempt to answer that question. Instead of starting by saying w
 
 ## SFT Is Language Modeling with a Mask
 
+<p class="section-description">The first confusion is small but important: if both SSL and SFT predict the next token, where does the supervision actually enter?</p>
+
 SFT is still language modeling. More specifically, it is still **autoregressive next-token prediction**: given the preceding tokens, predict the next token. For a sequence of text $(x_1,\dots,x_T)$, the model factorizes the probability of the whole sequence into a product of conditional probabilities at each step:
 
 $$
@@ -36,6 +38,8 @@ So where does the “supervision” come from? Not from the loss function itself
 
 
 ## SFT Fits the Reference Distribution
+
+<p class="section-description">Once the mask is clear, the next question is what SFT is optimizing toward. Writing the loss against a reference distribution makes that target visible.</p>
 
 SFT is a clean way to **align the training objective with the generation setting**: given a prompt, learn to produce the kind of response we want. But the same formulation also shows its **mathematical ceiling**. Once the training signal comes from a **fixed reference distribution**, SFT can only move the model toward that distribution.
 
@@ -87,6 +91,8 @@ The meaning is simple: if the training signal comes only from this reference dis
 This perspective is also useful when reading experiments. Many papers use a stronger large model to generate data, then SFT a smaller model on that data, and finally report improvements on benchmarks. There may well be methodological contributions in such work, but the first thing to acknowledge is that **this pipeline is essentially learning from a teacher-induced reference distribution**. A natural baseline should be **“directly distill the same teacher.”** If a method cannot beat that baseline, the gain may be coming mostly from the data source, rather than from the new method itself.
 
 ## Breaking SFT's Ceiling
+
+<p class="section-description">If fitting the reference distribution is the ceiling, the escape route has to show up in the update itself. The gradient tells us which knobs can be loosened.</p>
 
 In previous section, we saw that SFT is a clean training paradigm: it **aligns the training objective with the generation setting**, so that the model learns to produce a response given a prompt. But it also has a clear ceiling. If the training signal always comes from a **fixed reference distribution $q$**, the model can only be pushed toward $q$.
 
