@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "From SFT to RLHF: Reward and Policy Gradient"
+title: "From SFT to RL: Reward and Policy Gradient"
 date: 2026-07-17 21:00:00 -0400
 slug: "Post-Training from First Principles: RLHF"
 description: "Where RLHF's reward signal comes from, and how policy gradient turns a sequence-level score into token-level updates."
