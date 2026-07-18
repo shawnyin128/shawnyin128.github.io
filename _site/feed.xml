@@ -5,9 +5,267 @@
         <description></description>
         <link>https://shawnyin128.github.io/</link>
         <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Wed, 08 Jul 2026 21:44:49 -0400</pubDate>
-        <lastBuildDate>Wed, 08 Jul 2026 21:44:49 -0400</lastBuildDate>
+        <pubDate>Sat, 18 Jul 2026 00:55:24 -0400</pubDate>
+        <lastBuildDate>Sat, 18 Jul 2026 00:55:24 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
+        
+            <item>
+                <title>From SFT to RLHF: Reward and Policy Gradient</title>
+                <description>&lt;p&gt;Reinforcement learning (RL) is often presented as a list of algorithms: REINFORCE [1], PPO [2], DPO [3]. Before applying it to large language models (LLMs), it helps to return to RL’s basic object: &lt;strong&gt;a decision process with rewards&lt;/strong&gt;. A text prefix is the state $s_t$, the next token is the action $a_t$, and appending that token produces the next state. A complete response is a trajectory. LLM generation is therefore a Markov decision process (MDP) with text prefixes as states and almost deterministic transitions.&lt;/p&gt;
+
+&lt;p&gt;From this angle, RL is less a collection of algorithms than &lt;strong&gt;a way to improve a policy from rewards observed on its trajectories&lt;/strong&gt;. The discussion follows two questions: where does the reward come from, and how does a reward assigned to a completed trajectory change the policy that generated it? Reward models, the advantage $A_t$, and the Kullback–Leibler (KL) constraint in reinforcement learning from human feedback (RLHF) all follow from those questions.&lt;/p&gt;
+
+&lt;h2 id=&quot;where-does-reward-come-from&quot;&gt;Where Does Reward Come From?&lt;/h2&gt;
+
+&lt;p class=&quot;section-description&quot;&gt;RL begins with a question: what makes a response good? Before optimizing a policy, that judgment—the reward—must be specified.&lt;/p&gt;
+
+&lt;p&gt;Start with the simplest case: &lt;strong&gt;rewards can be verified directly.&lt;/strong&gt; Math and coding problems often have unambiguous answers. A verifier returns 1 for a correct answer and 0 otherwise. That is the reward $R$, supplied by the task itself, not by a learned model.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The difficulty begins when no verifier exists.&lt;/strong&gt; There is no single correct answer to “Help me write an appropriate reply,” so the judgment must come from people. But an absolute score is unreliable: what does a 7 mean? Another annotator, or the same annotator at a later time, may use a different scale. &lt;strong&gt;People are not especially good at maintaining a stable, shared scale of quality.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;People are, however, usually more consistent at comparing two responses.&lt;/strong&gt; Given two responses to the same prompt, they can more reliably say which one is better. Data for open-ended tasks therefore often takes the form of a preference: for two responses $(y^+,y^-)$ to prompt $x$, an annotator says that $y^+$ is better than $y^-$. But &lt;strong&gt;a preference is not yet a reward&lt;/strong&gt;. It ranks two responses, but gives neither a numeric score to an arbitrary response nor the size of the gap. Policy training still needs a scalar reward, so the question is how to construct a function $r(x,y)$ from many comparisons that can score any response while faithfully representing those preferences.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The Bradley–Terry model turns relative judgments into scalar scores.&lt;/strong&gt; It assigns each response an unobserved strength $w$ and assumes [4]:&lt;/p&gt;
+
+\[P(A\succ B)=\frac{w_A}{w_A+w_B}\]
+
+&lt;p&gt;Taking reward $r$ directly as $w$ causes a problem. A reward is unconstrained in sign and magnitude, while $w_A$ and $w_B$ must be positive for the right-hand side to be a valid probability. &lt;strong&gt;The softmax parameterization $w=\exp(r)$ keeps $r$ unconstrained while ensuring $w&amp;gt;0$.&lt;/strong&gt; A comparison can then be written as a difference between two scores:&lt;/p&gt;
+
+\[P(y^+\succ y^-\mid x)=\sigma\big(r(x,y^+)-r(x,y^-)\big)\]
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;Bradley–Terry to Sigmoid&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;① &lt;strong&gt;State the Bradley–Terry assumption.&lt;/strong&gt; Each response has a positive strength $w$, and the probability that A beats B depends on their relative strengths:&lt;/p&gt;
+
+\[P(A\succ B)=\frac{w_A}{w_A+w_B}\]
+
+  &lt;p&gt;② &lt;strong&gt;Substitute the parameterization.&lt;/strong&gt; Replace the two strengths with $w_A=\exp(r_A)$ and $w_B=\exp(r_B)$:&lt;/p&gt;
+
+\[P(A\succ B)=\frac{\exp(r_A)}{\exp(r_A)+\exp(r_B)}\]
+
+  &lt;p&gt;③ &lt;strong&gt;Rewrite the fraction as a difference.&lt;/strong&gt; Divide both numerator and denominator by $\exp(r_A)$:&lt;/p&gt;
+
+\[P(A\succ B)=\frac{1}{1+\exp(r_B-r_A)}\]
+
+  &lt;p&gt;④ &lt;strong&gt;Recognize the sigmoid.&lt;/strong&gt; Since $r_B-r_A=-(r_A-r_B)$, this is exactly the definition of the sigmoid:&lt;/p&gt;
+
+\[P(A\succ B)=\frac{1}{1+e^{-(r_A-r_B)}}=\sigma(r_A-r_B)\]
+
+&lt;/details&gt;
+
+&lt;p&gt;At this point, $r$ is still an abstract, unconstrained score. To learn it from preference data, &lt;strong&gt;parameterize it as&lt;/strong&gt; $r_\phi(x,y)$, a function that maps a prompt and response to a scalar. This function is the &lt;strong&gt;reward model (RM)&lt;/strong&gt;, and it must be &lt;strong&gt;trained on preference data&lt;/strong&gt;. In common language-model RLHF setups, it is often initialized from a supervised model and given a randomly initialized linear scalar head [5]. This is a common design, not the only possible reward-model architecture.&lt;/p&gt;
+
+&lt;p&gt;Substitute $r_\phi$ into the Bradley–Terry probability. For a preference $(x,y^+,y^-)$, define:&lt;/p&gt;
+
+\[r_\phi^+=r_\phi(x,y^+),\qquad r_\phi^-=r_\phi(x,y^-)\]
+
+&lt;p&gt;The model assigns probability $\sigma(r_\phi^+-r_\phi^-)$ to “$y^+$ is preferred to $y^-$.” &lt;strong&gt;Training uses maximum likelihood estimation (MLE) to maximize the likelihood of the observed preference pairs.&lt;/strong&gt; Taking the log, negating it, and averaging over the dataset gives:&lt;/p&gt;
+
+\[\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sigma\big(r_\phi(x,y^+)-r_\phi(x,y^-)\big)\big]\]
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;MLE Loss Derivation&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;① &lt;strong&gt;Write the likelihood.&lt;/strong&gt; For $N$ preferences ${(x_i,y_i^+,y_i^-)}$, let $r_i^+=r_\phi(x_i,y_i^+)$ and $r_i^-=r_\phi(x_i,y_i^-)$. Assuming preferences are independent, the probability of the batch is the product of their probabilities:
+\(L(\phi)=\prod_{i=1}^N \sigma\big(r_i^+-r_i^-\big)\)&lt;/p&gt;
+
+  &lt;p&gt;② &lt;strong&gt;Take the log.&lt;/strong&gt; The product becomes a sum. Since $\log$ is monotonic, maximizing $L$ is equivalent to maximizing $\log L$:
+\(\log L(\phi)=\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)\)&lt;/p&gt;
+
+  &lt;p&gt;③ &lt;strong&gt;Turn it into a loss.&lt;/strong&gt; Training conventionally minimizes an objective, so negate it:
+\(-\log L(\phi)=-\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)\)&lt;/p&gt;
+
+  &lt;p&gt;④ &lt;strong&gt;Average over the dataset.&lt;/strong&gt; Dividing by $N$ does not change the optimum and lets us write the result as an expectation:
+\(\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sigma(r_\phi^+-r_\phi^-)\big]\)&lt;/p&gt;
+
+&lt;/details&gt;
+
+&lt;p&gt;Gradient descent then fits $r_\phi$. If it learns stable patterns in human preferences rather than memorizing the training comparisons, it can generalize to unseen responses and score new outputs from the policy.&lt;/p&gt;
+
+&lt;p&gt;This completes the picture of where reward comes from: verifiable tasks provide rewards of 0 or 1 directly, while open-ended tasks use the learned $r_\phi$. But &lt;strong&gt;$r_\phi$ approximates human preferences. It is not human preference itself.&lt;/strong&gt; A policy that optimizes it too aggressively may learn to exploit its gaps.&lt;/p&gt;
+
+&lt;h2 id=&quot;connecting-a-trajectory-level-reward-to-each-step&quot;&gt;Connecting a Trajectory-Level Reward to Each Step&lt;/h2&gt;
+
+&lt;p class=&quot;section-description&quot;&gt;Policy gradient answers one question: how can a reward for a complete response be combined with token-level gradients to update a policy?&lt;/p&gt;
+
+&lt;p&gt;Model parameters directly control the log-probability of each generated token. A reward arrives only after the full response, with no ordinary autodiff path back to those parameters. &lt;strong&gt;The question is how a trajectory-level reward should change the probability of each token.&lt;/strong&gt; This is the credit-assignment problem, and policy gradient is its answer [6].&lt;/p&gt;
+
+&lt;p&gt;One generation produces a trajectory $\tau$. Different samples yield different responses and rewards. The policy $\pi_\theta$ determines each trajectory’s probability $P_\theta(\tau)$. The objective is not to reward one particular sample, but to &lt;strong&gt;maximize the generation process’s expected reward&lt;/strong&gt;:&lt;/p&gt;
+
+\[J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R]\]
+
+&lt;p&gt;At this point, the internal structure of the trajectory does not matter. Let $R(\tau)$ be the reward assigned after sampling trajectory $\tau$. Once $\tau$ is fixed, $R(\tau)$ does not depend on $\theta$. The parameters only change the probability $P_\theta(\tau)$ of sampling that trajectory. Differentiating the expectation therefore gives:&lt;/p&gt;
+
+\[\nabla_\theta J=\mathbb{E}_{\tau\sim\pi_\theta}\big[\nabla_\theta\log P_\theta(\tau)\,R\big]\]
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;From Expected Reward to a Trajectory Gradient&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;① &lt;strong&gt;Expand the objective.&lt;/strong&gt; Under the current policy, trajectory $\tau$ appears with probability $P_\theta(\tau)$. Expected reward is therefore a weighted sum over trajectories:&lt;/p&gt;
+
+\[J=\mathbb{E}_\tau[R]=\sum_\tau P_\theta(\tau)R\]
+
+  &lt;p&gt;② &lt;strong&gt;Differentiate with respect to the parameters.&lt;/strong&gt; Reward $R$ comes from an external evaluation after sampling and does not directly depend on $\theta$. The gradient therefore acts only on the probability of each trajectory:&lt;/p&gt;
+
+\[\nabla_\theta J=\sum_\tau \nabla_\theta P_\theta(\tau)\,R\]
+
+  &lt;p&gt;③ &lt;strong&gt;Rewrite the gradient in probability-weighted form.&lt;/strong&gt; This sum is not yet in a form that can be estimated by sampling, because $\nabla_\theta P_\theta(\tau)$ is not a probability-weighted sample term. Apply the score-function identity:&lt;/p&gt;
+
+\[\nabla_\theta P_\theta(\tau)=P_\theta(\tau)\nabla_\theta\log P_\theta(\tau)\]
+
+  &lt;p&gt;④ &lt;strong&gt;Substitute and recognize the expectation:&lt;/strong&gt;&lt;/p&gt;
+
+\[\nabla_\theta J=\sum_\tau P_\theta(\tau)\nabla_\theta\log P_\theta(\tau)R\]
+
+\[\nabla_\theta J=\mathbb{E}_{\tau\sim\pi_\theta}\big[\nabla_\theta\log P_\theta(\tau)\,R\big]\]
+
+&lt;/details&gt;
+
+&lt;p&gt;The remaining term is $\nabla_\theta\log P_\theta(\tau)$, the gradient of a complete trajectory’s probability. By itself, that is not yet useful for optimizing an LLM policy. An LLM does not produce a trajectory probability in one step. It produces a conditional probability for each next token. To turn the trajectory term into something the policy can optimize, $P_\theta(\tau)$ must be factored into the probabilities of its token-level decisions. &lt;strong&gt;This is where the MDP view enters.&lt;/strong&gt; (The same factorization also follows directly from the autoregressive likelihood used in SFT.)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;For an autoregressive LLM, the trajectory log-gradient decomposes into a sum of token log-probability gradients:&lt;/strong&gt;&lt;/p&gt;
+
+\[\nabla\log P_\theta(\tau)=\sum_t\nabla\log\pi_\theta(a_t\mid s_t)\]
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;From a Trajectory Gradient to Token Gradients&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;① &lt;strong&gt;Write the trajectory probability.&lt;/strong&gt; In an LLM, the action is the next token, and the transition simply appends that token to the current prefix. The next state is therefore determined by $(s_t,a_t)$, so $P(s_{t+1}\mid s_t,a_t)=1$. The trajectory probability reduces to the initial-state probability times the policy probability at each step:&lt;/p&gt;
+
+\[\begin{aligned}
+P_\theta(\tau)
+&amp;amp;= P(s_1)\prod_t P(a_t\mid s_t)\,
+   \underbrace{P(s_{t+1}\mid s_t,a_t)}_{=1} \\
+&amp;amp;= P(s_1)\prod_t\pi_\theta(a_t\mid s_t)
+\end{aligned}\]
+
+  &lt;p&gt;② &lt;strong&gt;Take the log and differentiate.&lt;/strong&gt; The initial-state probability $P(s_1)$ does not depend on $\theta$, leaving only one policy term for each token:&lt;/p&gt;
+
+\[\nabla\log P_\theta=\sum_t\nabla\log\pi_\theta(a_t\mid s_t)\]
+
+&lt;/details&gt;
+
+&lt;p&gt;Substituting this token-level decomposition into the trajectory-level gradient gives the most naive policy gradient:&lt;/p&gt;
+
+\[\nabla J=\mathbb{E}_\tau\Big[\sum_t R\,\nabla\log\pi_\theta(a_t\mid s_t)\Big]\]
+
+&lt;p&gt;This formula completes the connection from reward to token gradients. A high-reward trajectory raises the probability of every action it contains, and a low-reward trajectory lowers them.&lt;/p&gt;
+
+&lt;h2 id=&quot;from-return-to-advantage&quot;&gt;From Return to Advantage&lt;/h2&gt;
+
+&lt;p class=&quot;section-description&quot;&gt;The naive estimator gives every token the same terminal reward. Advantage estimates replace it with a context-dependent signal and reduce variance.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Every token receives the same terminal reward, regardless of how much it contributed to the final outcome.&lt;/strong&gt; A late token that determines whether an answer is correct and an early token that has no effect receive the same weight. For any one token, much of the reward may be determined by later sampled tokens. Those fluctuations become noise in its gradient, producing high variance.&lt;/p&gt;
+
+&lt;p&gt;At time $t$, write the return as $R=G_{&amp;lt;t}+G_t$. The past term $G_{&amp;lt;t}$ has already happened and cannot change with the current choice of $a_t$, so it should not affect this update.&lt;/p&gt;
+
+&lt;p&gt;The distinction between $G_t$ and $V(s_t)$ matters. &lt;strong&gt;$G_t$ is the return actually observed after taking $a_t$ and sampling the rest of the trajectory.&lt;/strong&gt; It is a Monte Carlo sample of the action value:&lt;/p&gt;
+
+\[\mathbb{E}[G_t\mid s_t,a_t]=Q_\pi(s_t,a_t)\]
+
+&lt;p&gt;&lt;strong&gt;$V(s_t)$ is the expected return before choosing an action.&lt;/strong&gt; It averages those action values over the policy’s possible actions:&lt;/p&gt;
+
+\[V_\pi(s_t)=\mathbb{E}_{a_t\sim\pi_\theta(\cdot\mid s_t)}[Q_\pi(s_t,a_t)]\]
+
+&lt;p&gt;So $G_t-V(s_t)$ asks whether this sampled continuation, after taking this particular action, did better or worse than what the policy expected from the same prefix.&lt;/p&gt;
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;Why the Past Return and State Baseline Can Be Removed&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;① &lt;strong&gt;State the baseline lemma.&lt;/strong&gt; Any term $b(s_t)$ that depends only on the state, not the current action, contributes zero in expectation to the policy gradient:&lt;/p&gt;
+
+\[\mathbb{E}_{a_t\sim\pi}[\nabla\log\pi(a_t\mid s_t)\cdot b(s_t)]=0\]
+
+  &lt;p&gt;② &lt;strong&gt;Verify the lemma.&lt;/strong&gt; Rewriting $\nabla\log\pi$ as $\nabla\pi/\pi$ leaves the gradient of the sum of policy probabilities:&lt;/p&gt;
+
+\[\begin{aligned}
+&amp;amp;\mathbb{E}_{a_t\sim\pi}[\nabla\log\pi(a_t\mid s_t)\cdot b(s_t)] \\
+&amp;amp;= b(s_t)\sum_{a_t}\pi(a_t\mid s_t)\nabla\log\pi(a_t\mid s_t) \\
+&amp;amp;= b(s_t)\sum_{a_t}\nabla\pi(a_t\mid s_t) \\
+&amp;amp;= b(s_t)\nabla\sum_{a_t}\pi(a_t\mid s_t) \\
+&amp;amp;= 0
+\end{aligned}\]
+
+  &lt;p&gt;③ &lt;strong&gt;Apply it to the return.&lt;/strong&gt; Given $s_t$, $G_{&amp;lt;t}$ is independent of the current $a_t$ and can be removed. $V(s_t)$ also depends only on the state, so subtracting it does not change the expected gradient. The weight becomes the advantage:&lt;/p&gt;
+
+\[\begin{aligned}
+\nabla J
+&amp;amp;= \mathbb{E}_\tau\Big[\sum_t \big(G_t-V(s_t)\big)
+   \,\nabla\log\pi_\theta(a_t\mid s_t)\Big] \\
+A_t &amp;amp;:= G_t-V(s_t)
+\end{aligned}\]
+
+&lt;/details&gt;
+
+&lt;p&gt;The LLM policy gradient can therefore be written as:&lt;/p&gt;
+
+\[\begin{aligned}
+\nabla_\theta J
+&amp;amp;= \mathbb{E}_{\tau\sim\pi_\theta}\Big[
+   \sum_t A_t\,\nabla_\theta\log\pi_\theta(a_t\mid s_t)\Big] \\
+A_t &amp;amp;:= G_t-V(s_t)
+\end{aligned}\]
+
+&lt;p&gt;Each token $a_t$ is updated in the direction that raises its probability, $\nabla\log\pi(a_t\mid s_t)$. The weight $A_t$ is called the advantage. &lt;strong&gt;It measures whether the return after this token was above or below the baseline for its context, and by how much.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;details class=&quot;math-note&quot;&gt;
+  &lt;summary&gt;&lt;b&gt;How to Read $A_t$&lt;/b&gt;&lt;/summary&gt;
+
+  &lt;p&gt;① &lt;strong&gt;Read the direction and magnitude.&lt;/strong&gt; $A_t$ determines the direction and strength of this token’s update. When $A_t&amp;gt;0$, raise the probability of $a_t$ after prefix $s_t$. When $A_t&amp;lt;0$, lower it. Its absolute value sets the strength. When $A_t=0$, this term contributes no gradient.&lt;/p&gt;
+
+  &lt;p&gt;② &lt;strong&gt;Do not treat it as exact attribution.&lt;/strong&gt; One update adds all $A_t\nabla\log\pi(a_t\mid s_t)$ terms and updates the shared parameters $\theta$. Each term carries its own prefix $s_t$, so it means “adjust $a_t$ in this context,” not “always prefer or avoid this token.”&lt;/p&gt;
+
+  &lt;p&gt;③ &lt;strong&gt;Average out noise across samples.&lt;/strong&gt; A single rollout is noisy. Across many rollouts, directions that recur consistently remain, while conflicting signals cancel. &lt;strong&gt;Credit assignment emerges statistically across rollouts, not from a precise attribution within one trajectory.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;/details&gt;
+
+&lt;h2 id=&quot;putting-reward-into-policy-gradient&quot;&gt;Putting Reward into Policy Gradient&lt;/h2&gt;
+
+&lt;p class=&quot;section-description&quot;&gt;Policy gradient only requires one scalar reward per trajectory. The source of that reward determines what the policy optimizes and where it can fail.&lt;/p&gt;
+
+&lt;p&gt;Policy gradient does not prescribe where reward comes from. For verifiable tasks, use the checker’s 0/1 output directly as $R$. For open-ended tasks, substitute the reward-model score $r_\phi(x,y)$ for $R$ and follow the same policy gradient.&lt;/p&gt;
+
+&lt;p&gt;After fitting $r_\phi$, it is typically held fixed while a separate policy is optimized against it. The policy no longer sees human judgments. &lt;strong&gt;It is rewarded only for a higher reward-model score.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;But the reward model is fitted to finite preference data. It is not quality itself.&lt;/strong&gt; Away from the training data and the reference policy $\pi_{SFT}$, its score can diverge from what people would actually prefer. The policy may then find low-quality responses that exploit those errors for inflated scores. This is &lt;strong&gt;reward hacking&lt;/strong&gt;. Unnecessarily lengthening a response is one common example (longer answers often look preferable, so the reward model may learn length rather than quality). &lt;strong&gt;Standard RLHF therefore adds a Kullback–Leibler (KL) constraint to the reward-model score&lt;/strong&gt;, keeping the policy near $\pi_{SFT}$ [5, 7]:&lt;/p&gt;
+
+\[R(x,y)=r_\phi(x,y)-\beta\,\mathrm{KL}\big(\pi_\theta\,\|\,\pi_{ref}\big)\]
+
+&lt;p&gt;Here, $\pi_{ref}=\pi_{SFT}$ is a frozen reference policy. The optimization rule stays the same. RLHF changes only the reward, turning it into the reward-model score minus a KL penalty. The sampled KL penalty decomposes into per-token terms, $-\beta\log\frac{\pi_\theta(a_t\mid s_t)}{\pi_{ref}(a_t\mid s_t)}$, providing a dense signal at every step alongside the sparse reward at the end of the response.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft&quot;&gt;SFT&lt;/a&gt; and policy gradient can now be placed in the same frame. Written side by side, they share &lt;strong&gt;the same optimization skeleton&lt;/strong&gt;:&lt;/p&gt;
+
+\[\mathcal{L}=-\,\mathbb{E}\Big[\sum_t w_t\,\log\pi_\theta(a_t\mid s_t)\Big]\quad(\pm\ \beta\,\text{KL})\]
+
+&lt;p&gt;In SFT, $w_t\equiv1$ and samples come from an offline demonstration dataset, so training can only increase the probability of demonstrated tokens. In RL, $w_t=A_t$, the advantage computed from reward. Samples come from the model itself through on-policy sampling. RL can reward as well as penalize, and may exceed its demonstrations.&lt;/p&gt;
+
+&lt;p&gt;Put differently, &lt;strong&gt;SFT is the special case with a constant weight of 1 and offline demonstrations.&lt;/strong&gt; RL lets reward determine the weight and draws samples from the current policy. PPO makes this optimization stable. DPO rewrites the KL-regularized objective directly as a preference objective, avoiding a reward model. GRPO turns to verifiable rewards and removes the value network. All of them build on the relationship between reward and policy gradient developed here.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol class=&quot;references-list&quot;&gt;
+  &lt;li&gt;Williams, Ronald J. “&lt;a href=&quot;https://doi.org/10.1007/BF00992696&quot;&gt;Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning&lt;/a&gt;.” &lt;em&gt;Machine Learning&lt;/em&gt;, vol. 8, 1992, pp. 229–256.&lt;/li&gt;
+  &lt;li&gt;Schulman, John, et al. “&lt;a href=&quot;https://arxiv.org/abs/1707.06347&quot;&gt;Proximal Policy Optimization Algorithms&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 20 July 2017.&lt;/li&gt;
+  &lt;li&gt;Rafailov, Rafael, et al. “&lt;a href=&quot;https://arxiv.org/abs/2305.18290&quot;&gt;Direct Preference Optimization: Your Language Model Is Secretly a Reward Model&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 29 May 2023.&lt;/li&gt;
+  &lt;li&gt;Bradley, Ralph Allan, and Milton E. Terry. “&lt;a href=&quot;https://doi.org/10.1093/biomet/39.3-4.324&quot;&gt;Rank Analysis of Incomplete Block Designs: The Method of Paired Comparisons&lt;/a&gt;.” &lt;em&gt;Biometrika&lt;/em&gt;, vol. 39, no. 3/4, 1952, pp. 324–345.&lt;/li&gt;
+  &lt;li&gt;Stiennon, Nisan, et al. “&lt;a href=&quot;https://arxiv.org/abs/2009.01325&quot;&gt;Learning to Summarize from Human Feedback&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 2 Sept. 2020.&lt;/li&gt;
+  &lt;li&gt;Sutton, Richard S., et al. “&lt;a href=&quot;https://proceedings.neurips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html&quot;&gt;Policy Gradient Methods for Reinforcement Learning with Function Approximation&lt;/a&gt;.” &lt;em&gt;Advances in Neural Information Processing Systems&lt;/em&gt;, vol. 12, 1999.&lt;/li&gt;
+  &lt;li&gt;Ziegler, Daniel M., et al. “&lt;a href=&quot;https://arxiv.org/abs/1909.08593&quot;&gt;Fine-Tuning Language Models from Human Preferences&lt;/a&gt;.” &lt;em&gt;arXiv&lt;/em&gt;, 18 Sept. 2019.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+                <pubDate>Fri, 17 Jul 2026 21:00:00 -0400</pubDate>
+                <link>https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf</link>
+                <guid isPermaLink="true">https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf</guid>
+                
+                <category>LLM</category>
+                
+                <category>Post-Training</category>
+                
+                
+            </item>
         
             <item>
                 <title>From SFT to RL: The Two Degrees of Freedom</title>
