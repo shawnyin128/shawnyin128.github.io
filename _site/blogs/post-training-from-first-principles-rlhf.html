@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>From SFT to RLHF: Reward and Policy Gradient</title>
+  <title>From SFT to RL: Reward and Policy Gradient</title>
   <meta name='description' content='Where RLHF's reward signal comes from, and how policy gradient turns a sequence-level score into token-level updates.'>
 
   <link rel="canonical" href="https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf">
@@ -14,12 +14,12 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="From SFT to RLHF: Reward and Policy Gradient – Shawn Yin">
+  <meta name="twitter:title" content="From SFT to RL: Reward and Policy Gradient – Shawn Yin">
   <meta name="twitter:description" content="Where RLHF&apos;s reward signal comes from, and how policy gradient turns a sequence-level score into token-level updates.">
   <meta name="twitter:image:src" content="">
 
   <!-- Facebook OpenGraph -->
-  <meta property="og:title" content="From SFT to RLHF: Reward and Policy Gradient – Shawn Yin">
+  <meta property="og:title" content="From SFT to RL: Reward and Policy Gradient – Shawn Yin">
   <meta property="og:description" content="Where RLHF&apos;s reward signal comes from, and how policy gradient turns a sequence-level score into token-level updates.">
   <meta property="og:image" content="">
 
@@ -282,7 +282,7 @@
 <article class="post container">
 
   <div class="post-head">
-    <h1 class="post-title">From SFT to RLHF: Reward and Policy Gradient</h1>
+    <h1 class="post-title">From SFT to RL: Reward and Policy Gradient</h1>
     
     <p class="post-description entry-description">Where RLHF's reward signal comes from, and how policy gradient turns a sequence-level score into token-level updates.</p>
     
@@ -301,7 +301,7 @@
       
       <span class="post-minutes post-meta__item">
       
-        13 min read
+        17 min read
       
       </span>
       
@@ -454,7 +454,7 @@ P_\theta(\tau)
 
 \[\nabla J=\mathbb{E}_\tau\Big[\sum_t R\,\nabla\log\pi_\theta(a_t\mid s_t)\Big]\]
 
-<p>This formula completes the connection from reward to token gradients. A high-reward trajectory raises the probability of every action it contains, and a low-reward trajectory lowers them.</p>
+<p>This formula completes the connection from reward to token gradients. With the 0/1 verifier reward above, a successful trajectory raises the probability of every action it contains. An unsuccessful trajectory contributes zero gradient. The limitation is that every token in a successful trajectory receives the same signal, whether or not it mattered to the outcome.</p>
 
 <h2 id="from-return-to-advantage">From Return to Advantage</h2>
 
@@ -462,7 +462,7 @@ P_\theta(\tau)
 
 <p><strong>Every token receives the same terminal reward, regardless of how much it contributed to the final outcome.</strong> A late token that determines whether an answer is correct and an early token that has no effect receive the same weight. For any one token, much of the reward may be determined by later sampled tokens. Those fluctuations become noise in its gradient, producing high variance.</p>
 
-<p>At time $t$, write the return as $R=G_{&lt;t}+G_t$. The past term $G_{&lt;t}$ has already happened and cannot change with the current choice of $a_t$, so it should not affect this update.</p>
+<p>At time $t$, write the return as $R=G_{&lt;t}+G_t$. For the terminal-only rewards considered so far, $G_{&lt;t}\equiv0$, so removing it does no work yet. The split becomes useful once rewards include intermediate terms, such as the per-token KL penalty introduced later. In general, the past term has already happened and cannot change with the current choice of $a_t$, so it should not affect this update.</p>
 
 <p>The distinction between $G_t$ and $V(s_t)$ matters. <strong>$G_t$ is the return actually observed after taking $a_t$ and sampling the rest of the trajectory.</strong> It is a Monte Carlo sample of the action value:</p>
 
@@ -491,7 +491,7 @@ P_\theta(\tau)
 &amp;= 0
 \end{aligned}\]
 
-  <p>③ <strong>Apply it to the return.</strong> Given $s_t$, $G_{&lt;t}$ is independent of the current $a_t$ and can be removed. $V(s_t)$ also depends only on the state, so subtracting it does not change the expected gradient. The weight becomes the advantage:</p>
+  <p>③ <strong>Apply it to the return.</strong> Given $s_t$, $G_{&lt;t}$ is independent of the current $a_t$ and can be removed. For terminal-only reward, it is already zero. $V(s_t)$ also depends only on the state, so subtracting it does not change the expected gradient. The weight becomes the advantage:</p>
 
 \[\begin{aligned}
 \nabla J
@@ -530,13 +530,147 @@ A_t &amp;:= G_t-V(s_t)
 
 <p>Policy gradient does not prescribe where reward comes from. For verifiable tasks, use the checker’s 0/1 output directly as $R$. For open-ended tasks, substitute the reward-model score $r_\phi(x,y)$ for $R$ and follow the same policy gradient.</p>
 
+<p>From here on, fix a prompt $x$ and let $y=(a_1,\ldots,a_T)$ denote the complete sampled response. In the MDP notation above, $y$ is the generated part of the trajectory $\tau$. <strong>Because an LLM transition only appends each new token to the prefix, $y$ and $\tau$ are equivalent once $x$ is fixed.</strong></p>
+
+<p>Substituting $R=r_\phi(x,y)$ into the token-level policy gradient gives:</p>
+
+\[\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+r_\phi(x,y)
+\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\right]\]
+
 <p>After fitting $r_\phi$, it is typically held fixed while a separate policy is optimized against it. The policy no longer sees human judgments. <strong>It is rewarded only for a higher reward-model score.</strong></p>
 
-<p><strong>But the reward model is fitted to finite preference data. It is not quality itself.</strong> Away from the training data and the reference policy $\pi_{SFT}$, its score can diverge from what people would actually prefer. The policy may then find low-quality responses that exploit those errors for inflated scores. This is <strong>reward hacking</strong>. Unnecessarily lengthening a response is one common example (longer answers often look preferable, so the reward model may learn length rather than quality). <strong>Standard RLHF therefore adds a Kullback–Leibler (KL) constraint to the reward-model score</strong>, keeping the policy near $\pi_{SFT}$ [5, 7]:</p>
+<h2 id="reward-hacking-and-kl-constraint">Reward Hacking and KL Constraint</h2>
 
-\[R(x,y)=r_\phi(x,y)-\beta\,\mathrm{KL}\big(\pi_\theta\,\|\,\pi_{ref}\big)\]
+<p class="section-description">A learned reward is only a proxy for quality. The KL constraint limits how far policy optimization can move from the reference model.</p>
 
-<p>Here, $\pi_{ref}=\pi_{SFT}$ is a frozen reference policy. The optimization rule stays the same. RLHF changes only the reward, turning it into the reward-model score minus a KL penalty. The sampled KL penalty decomposes into per-token terms, $-\beta\log\frac{\pi_\theta(a_t\mid s_t)}{\pi_{ref}(a_t\mid s_t)}$, providing a dense signal at every step alongside the sparse reward at the end of the response.</p>
+<p><strong>But the reward model is fitted to finite preference data. It is not quality itself.</strong> Away from the training data and the reference policy $\pi_{SFT}$, its score can diverge from what people would actually prefer. The policy may then find low-quality responses that exploit those errors for inflated scores. This is <strong>reward hacking</strong>. Unnecessarily lengthening a response is one common example (longer answers often look preferable, so the reward model may learn length rather than quality). <strong>Standard RLHF therefore adds a Kullback–Leibler (KL) constraint to the objective</strong>, keeping the policy near $\pi_{SFT}$ [5, 7]:</p>
+
+\[J_x(\theta)=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}[r_\phi(x,y)]
+-\beta\,\mathrm{KL}\big(\pi_\theta(\cdot\mid x)\,\|\,\pi_{ref}(\cdot\mid x)\big)\]
+
+<p>Recall the original objective:</p>
+
+\[J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R]\]
+
+<p>The first term in $J_x(\theta)$ is the same objective with the reward-model score $r_\phi(x,y)$ in place of $R$. RLHF adds the second term, which penalizes the distance between the policy and the reference distribution. The goal therefore changes from maximizing expected reward alone to maximizing expected reward while limiting how far the policy can move from $\pi_{ref}$.</p>
+
+<p>Here, $\pi_{ref}=\pi_{SFT}$ is a frozen reference policy. Because the current policy appears first and the reference policy second, this direction is commonly called the <strong>reverse KL</strong>. It compares the two response distributions as follows:</p>
+
+\[\mathrm{KL}\big(\pi_\theta\|\pi_{ref}\big)
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right]\]
+
+<p>Substituting this definition into $J_x(\theta)$ puts both terms under one expectation:</p>
+
+\[J_x(\theta)
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+r_\phi(x,y)
+-\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right]\]
+
+<p>This form makes the sampled signal concrete. A response receives its reward-model score, then pays a penalty when the current policy makes it more likely than the reference policy does.</p>
+
+<p>Directly differentiating this objective gives:</p>
+
+\[\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\left(
+r_\phi(x,y)
+-\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right)
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]\]
+
+<details class="math-note">
+  <summary><b>How the KL Penalty Enters the Policy Gradient</b></summary>
+
+  <p>Unlike the fixed reward model $r_\phi$, the KL contains the policy being optimized. Its gradient therefore has to be worked out directly.</p>
+
+  <p>① <strong>Write the KL as a sum over responses.</strong> For a fixed prompt $x$:</p>
+
+\[\mathrm{KL}(\pi_\theta\|\pi_{ref})
+=\sum_y \pi_\theta(y\mid x)
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}\]
+
+  <p>The policy appears twice: once as the probability assigned to $y$, and again inside the log-ratio.</p>
+
+  <p>② <strong>Apply the product rule.</strong> Differentiating these two appearances produces two terms:</p>
+
+\[\begin{aligned}
+\nabla_\theta\mathrm{KL}
+&amp;=\sum_y
+\nabla_\theta\pi_\theta(y\mid x)
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\\
+&amp;\quad+\sum_y
+\pi_\theta(y\mid x)
+\nabla_\theta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\end{aligned}\]
+
+  <p>The reference policy is frozen, so the derivative inside the second sum is simply $\nabla_\theta\log\pi_\theta(y\mid x)$.</p>
+
+  <p>③ <strong>The second sum is zero.</strong> Using $\pi_\theta\nabla_\theta\log\pi_\theta=\nabla_\theta\pi_\theta$, it becomes the gradient of the total probability assigned to all responses:</p>
+
+\[\begin{aligned}
+\sum_y\pi_\theta(y\mid x)
+\nabla_\theta\log\pi_\theta(y\mid x)
+&amp;=\sum_y\nabla_\theta\pi_\theta(y\mid x)
+\\
+&amp;=\nabla_\theta\sum_y\pi_\theta(y\mid x)
+\\
+&amp;=\nabla_\theta 1
+\\
+&amp;=0
+\end{aligned}\]
+
+  <p>④ <strong>Rewrite the remaining sum as an expectation.</strong> Apply $\nabla_\theta\pi_\theta=\pi_\theta\nabla_\theta\log\pi_\theta$ to turn the remaining term into a probability-weighted sum. That sum is exactly an expectation under $\pi_\theta$:</p>
+
+\[\begin{aligned}
+\nabla_\theta\mathrm{KL}(\pi_\theta\|\pi_{ref})
+&amp;=\sum_y \pi_\theta(y\mid x)
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\nabla_\theta\log\pi_\theta(y\mid x)
+\\
+&amp;=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]
+\end{aligned}\]
+
+  <p>⑤ <strong>Decompose the response-level penalty.</strong> An autoregressive LLM assigns a response its probability by multiplying the conditional probability of every generated token. The current and reference policies therefore factorize as:</p>
+
+\[\pi_\theta(y\mid x)
+=\prod_t\pi_\theta(a_t\mid s_t),
+\qquad
+\pi_{ref}(y\mid x)
+=\prod_t\pi_{ref}(a_t\mid s_t)\]
+
+  <p>Their ratio is a product of token-level ratios:</p>
+
+\[\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+=\prod_t
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{ref}(a_t\mid s_t)}\]
+
+  <p>Taking the log turns that product into a sum:</p>
+
+\[\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+=\sum_t
+\log\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{ref}(a_t\mid s_t)}\]
+
+  <p>The reward-model score arrives at the end of the response, while the KL penalty contributes a term at every generated token.</p>
+
+</details>
 
 <h2 id="conclusion">Conclusion</h2>
 
@@ -566,7 +700,7 @@ A_t &amp;:= G_t-V(s_t)
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=From%20SFT%20to%20RLHF:%20Reward%20and%20Policy%20Gradient&url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf"
+        href="https://twitter.com/intent/tweet?text=From%20SFT%20to%20RL:%20Reward%20and%20Policy%20Gradient&url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="fa-brands fa-x-twitter"></i></a>
     </li>
@@ -576,11 +710,11 @@ A_t &amp;:= G_t-V(s_t)
         title="Share on Facebook" rel="nofollow"><i class="fa-brands fa-facebook"></i></a>
     </li>
     <li class="share__item">
-      <a class="share__link share__linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf&title=From%20SFT%20to%20RLHF:%20Reward%20and%20Policy%20Gradient&summary=Where%20RLHF's%20reward%20signal%20comes%20from,%20and%20how%20policy%20gradient%20turns%20a%20sequence-level%20score%20into%20token-level%20updates.&source="
+      <a class="share__link share__linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf&title=From%20SFT%20to%20RL:%20Reward%20and%20Policy%20Gradient&summary=Where%20RLHF's%20reward%20signal%20comes%20from,%20and%20how%20policy%20gradient%20turns%20a%20sequence-level%20score%20into%20token-level%20updates.&source="
       onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn" rel="nofollow"><i class="fa-brands fa-linkedin"></i></a>
     </li>
     <li class="share__item">
-      <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf&amp;media=https://shawnyin128.github.io&amp;description=From%20SFT%20to%20RLHF:%20Reward%20and%20Policy%20Gradient"
+      <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://shawnyin128.github.io/blogs/post-training-from-first-principles-rlhf&amp;media=https://shawnyin128.github.io&amp;description=From%20SFT%20to%20RL:%20Reward%20and%20Policy%20Gradient"
       onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"
       rel="nofollow"><i class="fa-brands fa-pinterest"></i></a>
     </li>

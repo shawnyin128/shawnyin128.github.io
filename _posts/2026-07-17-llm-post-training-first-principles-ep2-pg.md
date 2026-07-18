@@ -156,7 +156,7 @@ Substituting this token-level decomposition into the trajectory-level gradient g
 
 $$\nabla J=\mathbb{E}_\tau\Big[\sum_t R\,\nabla\log\pi_\theta(a_t\mid s_t)\Big]$$
 
-This formula completes the connection from reward to token gradients. A high-reward trajectory raises the probability of every action it contains, and a low-reward trajectory lowers them.
+This formula completes the connection from reward to token gradients. With the 0/1 verifier reward above, a successful trajectory raises the probability of every action it contains. An unsuccessful trajectory contributes zero gradient. The limitation is that every token in a successful trajectory receives the same signal, whether or not it mattered to the outcome.
 
 ## From Return to Advantage
 
@@ -164,7 +164,7 @@ This formula completes the connection from reward to token gradients. A high-rew
 
 **Every token receives the same terminal reward, regardless of how much it contributed to the final outcome.** A late token that determines whether an answer is correct and an early token that has no effect receive the same weight. For any one token, much of the reward may be determined by later sampled tokens. Those fluctuations become noise in its gradient, producing high variance.
 
-At time $t$, write the return as $R=G_{<t}+G_t$. The past term $G_{<t}$ has already happened and cannot change with the current choice of $a_t$, so it should not affect this update.
+At time $t$, write the return as $R=G_{<t}+G_t$. For the terminal-only rewards considered so far, $G_{<t}\equiv0$, so removing it does no work yet. The split becomes useful once rewards include intermediate terms, such as the per-token KL penalty introduced later. In general, the past term has already happened and cannot change with the current choice of $a_t$, so it should not affect this update.
 
 The distinction between $G_t$ and $V(s_t)$ matters. **$G_t$ is the return actually observed after taking $a_t$ and sampling the rest of the trajectory.** It is a Monte Carlo sample of the action value:
 
@@ -195,7 +195,7 @@ $$
 \end{aligned}
 $$
 
-③ **Apply it to the return.** Given $s_t$, $G_{<t}$ is independent of the current $a_t$ and can be removed. $V(s_t)$ also depends only on the state, so subtracting it does not change the expected gradient. The weight becomes the advantage:
+③ **Apply it to the return.** Given $s_t$, $G_{<t}$ is independent of the current $a_t$ and can be removed. For terminal-only reward, it is already zero. $V(s_t)$ also depends only on the state, so subtracting it does not change the expected gradient. The weight becomes the advantage:
 
 $$
 \begin{aligned}
@@ -238,15 +238,173 @@ Each token $a_t$ is updated in the direction that raises its probability, $\nabl
 
 Policy gradient does not prescribe where reward comes from. For verifiable tasks, use the checker's 0/1 output directly as $R$. For open-ended tasks, substitute the reward-model score $r_\phi(x,y)$ for $R$ and follow the same policy gradient.
 
+From here on, fix a prompt $x$ and let $y=(a_1,\ldots,a_T)$ denote the complete sampled response. In the MDP notation above, $y$ is the generated part of the trajectory $\tau$. **Because an LLM transition only appends each new token to the prefix, $y$ and $\tau$ are equivalent once $x$ is fixed.**
+
+Substituting $R=r_\phi(x,y)$ into the token-level policy gradient gives:
+
+$$
+\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+r_\phi(x,y)
+\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\right]
+$$
+
 After fitting $r_\phi$, it is typically held fixed while a separate policy is optimized against it. The policy no longer sees human judgments. **It is rewarded only for a higher reward-model score.**
 
-**But the reward model is fitted to finite preference data. It is not quality itself.** Away from the training data and the reference policy $\pi_{SFT}$, its score can diverge from what people would actually prefer. The policy may then find low-quality responses that exploit those errors for inflated scores. This is **reward hacking**. Unnecessarily lengthening a response is one common example (longer answers often look preferable, so the reward model may learn length rather than quality). **Standard RLHF therefore adds a Kullback–Leibler (KL) constraint to the reward-model score**, keeping the policy near $\pi_{SFT}$ [5, 7]:
+## Reward Hacking and KL Constraint
+
+<p class="section-description">A learned reward is only a proxy for quality. The KL constraint limits how far policy optimization can move from the reference model.</p>
+
+**But the reward model is fitted to finite preference data. It is not quality itself.** Away from the training data and the reference policy $\pi_{SFT}$, its score can diverge from what people would actually prefer. The policy may then find low-quality responses that exploit those errors for inflated scores. This is **reward hacking**. Unnecessarily lengthening a response is one common example (longer answers often look preferable, so the reward model may learn length rather than quality). **Standard RLHF therefore adds a Kullback–Leibler (KL) constraint to the objective**, keeping the policy near $\pi_{SFT}$ [5, 7]:
 
 $$
-R(x,y)=r_\phi(x,y)-\beta\,\mathrm{KL}\big(\pi_\theta\,\|\,\pi_{ref}\big)
+J_x(\theta)=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}[r_\phi(x,y)]
+-\beta\,\mathrm{KL}\big(\pi_\theta(\cdot\mid x)\,\|\,\pi_{ref}(\cdot\mid x)\big)
 $$
 
-Here, $\pi_{ref}=\pi_{SFT}$ is a frozen reference policy. The optimization rule stays the same. RLHF changes only the reward, turning it into the reward-model score minus a KL penalty. The sampled KL penalty decomposes into per-token terms, $-\beta\log\frac{\pi_\theta(a_t\mid s_t)}{\pi_{ref}(a_t\mid s_t)}$, providing a dense signal at every step alongside the sparse reward at the end of the response.
+Recall the original objective:
+
+$$
+J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R]
+$$
+
+The first term in $J_x(\theta)$ is the same objective with the reward-model score $r_\phi(x,y)$ in place of $R$. RLHF adds the second term, which penalizes the distance between the policy and the reference distribution. The goal therefore changes from maximizing expected reward alone to maximizing expected reward while limiting how far the policy can move from $\pi_{ref}$.
+
+Here, $\pi_{ref}=\pi_{SFT}$ is a frozen reference policy. Because the current policy appears first and the reference policy second, this direction is commonly called the **reverse KL**. It compares the two response distributions as follows:
+
+$$
+\mathrm{KL}\big(\pi_\theta\|\pi_{ref}\big)
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right]
+$$
+
+Substituting this definition into $J_x(\theta)$ puts both terms under one expectation:
+
+$$
+J_x(\theta)
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+r_\phi(x,y)
+-\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right]
+$$
+
+This form makes the sampled signal concrete. A response receives its reward-model score, then pays a penalty when the current policy makes it more likely than the reference policy does.
+
+Directly differentiating this objective gives:
+
+$$
+\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\left(
+r_\phi(x,y)
+-\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right)
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]
+$$
+
+<details class="math-note" markdown="1">
+<summary><b>How the KL Penalty Enters the Policy Gradient</b></summary>
+
+Unlike the fixed reward model $r_\phi$, the KL contains the policy being optimized. Its gradient therefore has to be worked out directly.
+
+① **Write the KL as a sum over responses.** For a fixed prompt $x$:
+
+$$
+\mathrm{KL}(\pi_\theta\|\pi_{ref})
+=\sum_y \pi_\theta(y\mid x)
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+$$
+
+The policy appears twice: once as the probability assigned to $y$, and again inside the log-ratio.
+
+② **Apply the product rule.** Differentiating these two appearances produces two terms:
+
+$$
+\begin{aligned}
+\nabla_\theta\mathrm{KL}
+&=\sum_y
+\nabla_\theta\pi_\theta(y\mid x)
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\\
+&\quad+\sum_y
+\pi_\theta(y\mid x)
+\nabla_\theta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\end{aligned}
+$$
+
+The reference policy is frozen, so the derivative inside the second sum is simply $\nabla_\theta\log\pi_\theta(y\mid x)$.
+
+③ **The second sum is zero.** Using $\pi_\theta\nabla_\theta\log\pi_\theta=\nabla_\theta\pi_\theta$, it becomes the gradient of the total probability assigned to all responses:
+
+$$
+\begin{aligned}
+\sum_y\pi_\theta(y\mid x)
+\nabla_\theta\log\pi_\theta(y\mid x)
+&=\sum_y\nabla_\theta\pi_\theta(y\mid x)
+\\
+&=\nabla_\theta\sum_y\pi_\theta(y\mid x)
+\\
+&=\nabla_\theta 1
+\\
+&=0
+\end{aligned}
+$$
+
+④ **Rewrite the remaining sum as an expectation.** Apply $\nabla_\theta\pi_\theta=\pi_\theta\nabla_\theta\log\pi_\theta$ to turn the remaining term into a probability-weighted sum. That sum is exactly an expectation under $\pi_\theta$:
+
+$$
+\begin{aligned}
+\nabla_\theta\mathrm{KL}(\pi_\theta\|\pi_{ref})
+&=\sum_y \pi_\theta(y\mid x)
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\nabla_\theta\log\pi_\theta(y\mid x)
+\\
+&=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]
+\end{aligned}
+$$
+
+⑤ **Decompose the response-level penalty.** An autoregressive LLM assigns a response its probability by multiplying the conditional probability of every generated token. The current and reference policies therefore factorize as:
+
+$$
+\pi_\theta(y\mid x)
+=\prod_t\pi_\theta(a_t\mid s_t),
+\qquad
+\pi_{ref}(y\mid x)
+=\prod_t\pi_{ref}(a_t\mid s_t)
+$$
+
+Their ratio is a product of token-level ratios:
+
+$$
+\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+=\prod_t
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{ref}(a_t\mid s_t)}
+$$
+
+Taking the log turns that product into a sum:
+
+$$
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+=\sum_t
+\log\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{ref}(a_t\mid s_t)}
+$$
+
+The reward-model score arrives at the end of the response, while the KL penalty contributes a term at every generated token.
+
+</details>
 
 ## Conclusion
 
