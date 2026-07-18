@@ -374,7 +374,45 @@ $$
 \end{aligned}
 $$
 
-⑤ **Decompose the response-level penalty.** An autoregressive LLM assigns a response its probability by multiplying the conditional probability of every generated token. The current and reference policies therefore factorize as:
+⑤ **Combine the reward and KL gradients.** Gradients add linearly, so the two terms in the objective can be differentiated separately:
+
+$$
+\nabla_\theta J_x
+=\nabla_\theta
+\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\big[r_\phi(x,y)\big]
+-\beta\,\nabla_\theta
+\mathrm{KL}(\pi_\theta\|\pi_{ref})
+$$
+
+The reward model is fixed during policy training. Its contribution is therefore the policy gradient derived earlier:
+
+$$
+\nabla_\theta
+\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\big[r_\phi(x,y)\big]
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+r_\phi(x,y)\,
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]
+$$
+
+Substituting this reward gradient and the KL gradient from the previous step gives:
+
+$$
+\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\left(
+r_\phi(x,y)
+-\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right)
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]
+$$
+
+⑥ **Decompose the response-level penalty.** An autoregressive LLM assigns a response its probability by multiplying the conditional probability of every generated token. The current and reference policies therefore factorize as:
 
 $$
 \pi_\theta(y\mid x)

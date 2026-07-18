@@ -5,8 +5,8 @@
         <description></description>
         <link>https://shawnyin128.github.io/</link>
         <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sat, 18 Jul 2026 01:42:52 -0400</pubDate>
-        <lastBuildDate>Sat, 18 Jul 2026 01:42:52 -0400</lastBuildDate>
+        <pubDate>Sat, 18 Jul 2026 01:46:29 -0400</pubDate>
+        <lastBuildDate>Sat, 18 Jul 2026 01:46:29 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
         
             <item>
@@ -342,7 +342,39 @@ r_\phi(x,y)
 \right]
 \end{aligned}\]
 
-  &lt;p&gt;⑤ &lt;strong&gt;Decompose the response-level penalty.&lt;/strong&gt; An autoregressive LLM assigns a response its probability by multiplying the conditional probability of every generated token. The current and reference policies therefore factorize as:&lt;/p&gt;
+  &lt;p&gt;⑤ &lt;strong&gt;Combine the reward and KL gradients.&lt;/strong&gt; Gradient is linear, so the two terms in the objective can be differentiated separately:&lt;/p&gt;
+
+\[\nabla_\theta J_x
+=\nabla_\theta
+\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\big[r_\phi(x,y)\big]
+-\beta\,\nabla_\theta
+\mathrm{KL}(\pi_\theta\|\pi_{ref})\]
+
+  &lt;p&gt;The reward model is fixed during policy training. Its contribution is therefore the policy gradient derived earlier:&lt;/p&gt;
+
+\[\nabla_\theta
+\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\big[r_\phi(x,y)\big]
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+r_\phi(x,y)\,
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]\]
+
+  &lt;p&gt;Substituting this reward gradient and the KL gradient from the previous step gives:&lt;/p&gt;
+
+\[\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\left(
+r_\phi(x,y)
+-\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+\right)
+\nabla_\theta\log\pi_\theta(y\mid x)
+\right]\]
+
+  &lt;p&gt;⑥ &lt;strong&gt;Decompose the response-level penalty.&lt;/strong&gt; An autoregressive LLM assigns a response its probability by multiplying the conditional probability of every generated token. The current and reference policies therefore factorize as:&lt;/p&gt;
 
 \[\pi_\theta(y\mid x)
 =\prod_t\pi_\theta(a_t\mid s_t),
