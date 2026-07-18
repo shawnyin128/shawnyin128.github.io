@@ -5,13 +5,13 @@
         <description></description>
         <link>https://shawnyin128.github.io/</link>
         <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sat, 18 Jul 2026 01:55:04 -0400</pubDate>
-        <lastBuildDate>Sat, 18 Jul 2026 01:55:04 -0400</lastBuildDate>
+        <pubDate>Sat, 18 Jul 2026 02:11:24 -0400</pubDate>
+        <lastBuildDate>Sat, 18 Jul 2026 02:11:24 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
         
             <item>
                 <title>From SFT to RL: Reward and Policy Gradient</title>
-                <description>&lt;p&gt;Reinforcement learning (RL) is often presented as a list of algorithms: REINFORCE [1], PPO [2], DPO [3]. Before applying it to large language models (LLMs), it helps to return to RL’s basic object: &lt;strong&gt;a decision process with rewards&lt;/strong&gt;. A text prefix is the state $s_t$, the next token is the action $a_t$, and appending that token produces the next state. A complete response is a trajectory. LLM generation is therefore a Markov decision process (MDP) with text prefixes as states and almost deterministic transitions.&lt;/p&gt;
+                <description>&lt;p&gt;Reinforcement learning (RL) is often presented as a list of algorithms: REINFORCE [1], PPO [2], DPO [3]. Before applying it to large language models (LLMs), it helps to return to RL’s basic object: &lt;strong&gt;a decision process with rewards&lt;/strong&gt;. A text prefix is the state $s_t$, the next token is the action $a_t$, and appending that token produces the next state. A complete response is a trajectory. LLM generation is therefore a Markov decision process (MDP) with text prefixes as states and deterministic transitions.&lt;/p&gt;
 
 &lt;p&gt;From this angle, RL is less a collection of algorithms than &lt;strong&gt;a way to improve a policy from rewards observed on its trajectories&lt;/strong&gt;. The discussion follows two questions: where does the reward come from, and how does a reward assigned to a completed trajectory change the policy that generated it? Reward models, the advantage $A_t$, and the Kullback–Leibler (KL) constraint in reinforcement learning from human feedback (RLHF) all follow from those questions.&lt;/p&gt;
 
@@ -29,7 +29,7 @@
 
 \[P(A\succ B)=\frac{w_A}{w_A+w_B}\]
 
-&lt;p&gt;Taking reward $r$ directly as $w$ causes a problem. A reward is unconstrained in sign and magnitude, while $w_A$ and $w_B$ must be positive for the right-hand side to be a valid probability. &lt;strong&gt;The softmax parameterization $w=\exp(r)$ keeps $r$ unconstrained while ensuring $w&amp;gt;0$.&lt;/strong&gt; A comparison can then be written as a difference between two scores:&lt;/p&gt;
+&lt;p&gt;Taking reward $r$ directly as $w$ causes a problem. A reward is unconstrained in sign and magnitude, while $w_A$ and $w_B$ must be positive for the right-hand side to be a valid probability. &lt;strong&gt;The exponential parameterization $w=\exp(r)$ keeps $r$ unconstrained while ensuring $w&amp;gt;0$.&lt;/strong&gt; A comparison can then be written as a difference between two scores:&lt;/p&gt;
 
 \[P(y^+\succ y^-\mid x)=\sigma\big(r(x,y^+)-r(x,y^-)\big)\]
 
@@ -67,17 +67,21 @@
 &lt;details class=&quot;math-note&quot;&gt;
   &lt;summary&gt;&lt;b&gt;MLE Loss Derivation&lt;/b&gt;&lt;/summary&gt;
 
-  &lt;p&gt;① &lt;strong&gt;Write the likelihood.&lt;/strong&gt; For $N$ preferences ${(x_i,y_i^+,y_i^-)}$, let $r_i^+=r_\phi(x_i,y_i^+)$ and $r_i^-=r_\phi(x_i,y_i^-)$. Assuming preferences are independent, the probability of the batch is the product of their probabilities:
-\(L(\phi)=\prod_{i=1}^N \sigma\big(r_i^+-r_i^-\big)\)&lt;/p&gt;
+  &lt;p&gt;① &lt;strong&gt;Write the likelihood.&lt;/strong&gt; For $N$ preferences $\{(x_i,y_i^+,y_i^-)\}$, let $r_i^+=r_\phi(x_i,y_i^+)$ and $r_i^-=r_\phi(x_i,y_i^-)$. Assuming preferences are independent, the probability of the batch is the product of their probabilities:&lt;/p&gt;
 
-  &lt;p&gt;② &lt;strong&gt;Take the log.&lt;/strong&gt; The product becomes a sum. Since $\log$ is monotonic, maximizing $L$ is equivalent to maximizing $\log L$:
-\(\log L(\phi)=\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)\)&lt;/p&gt;
+\[L(\phi)=\prod_{i=1}^N \sigma\big(r_i^+-r_i^-\big)\]
 
-  &lt;p&gt;③ &lt;strong&gt;Turn it into a loss.&lt;/strong&gt; Training conventionally minimizes an objective, so negate it:
-\(-\log L(\phi)=-\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)\)&lt;/p&gt;
+  &lt;p&gt;② &lt;strong&gt;Take the log.&lt;/strong&gt; The product becomes a sum. Since $\log$ is monotonic, maximizing $L$ is equivalent to maximizing $\log L$:&lt;/p&gt;
 
-  &lt;p&gt;④ &lt;strong&gt;Average over the dataset.&lt;/strong&gt; Dividing by $N$ does not change the optimum and lets us write the result as an expectation:
-\(\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sigma(r_\phi^+-r_\phi^-)\big]\)&lt;/p&gt;
+\[\log L(\phi)=\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)\]
+
+  &lt;p&gt;③ &lt;strong&gt;Turn it into a loss.&lt;/strong&gt; Training conventionally minimizes an objective, so negate it:&lt;/p&gt;
+
+\[-\log L(\phi)=-\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)\]
+
+  &lt;p&gt;④ &lt;strong&gt;Average over the dataset.&lt;/strong&gt; Dividing by $N$ does not change the optimum and lets us write the result as an expectation:&lt;/p&gt;
+
+\[\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sigma(r_\phi^+-r_\phi^-)\big]\]
 
 &lt;/details&gt;
 
@@ -135,7 +139,7 @@
 
 \[\begin{aligned}
 P_\theta(\tau)
-&amp;amp;= P(s_1)\prod_t P(a_t\mid s_t)\,
+&amp;amp;= P(s_1)\prod_t \pi_\theta(a_t\mid s_t)\,
    \underbrace{P(s_{t+1}\mid s_t,a_t)}_{=1} \\
 &amp;amp;= P(s_1)\prod_t\pi_\theta(a_t\mid s_t)
 \end{aligned}\]
@@ -452,7 +456,7 @@ r_\phi(x,y)
 
 &lt;p&gt;&lt;a href=&quot;https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft&quot;&gt;SFT&lt;/a&gt; and policy gradient can now be placed in the same frame. Written side by side, they share &lt;strong&gt;the same optimization skeleton&lt;/strong&gt;:&lt;/p&gt;
 
-\[\mathcal{L}=-\,\mathbb{E}\Big[\sum_t w_t\,\log\pi_\theta(a_t\mid s_t)\Big]\quad(\pm\ \beta\,\text{KL})\]
+\[\mathcal{L}=-\,\mathbb{E}\Big[\sum_t w_t\,\log\pi_\theta(a_t\mid s_t)\Big]\]
 
 &lt;p&gt;In SFT, $w_t\equiv1$ and samples come from an offline demonstration dataset, so training can only increase the probability of demonstrated tokens. In RL, $w_t=A_t$, the advantage computed from reward. Samples come from the model itself through on-policy sampling. RL can reward as well as penalize, and may exceed its demonstrations.&lt;/p&gt;
 

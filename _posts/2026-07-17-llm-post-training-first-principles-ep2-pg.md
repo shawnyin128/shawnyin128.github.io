@@ -8,7 +8,7 @@ tags: [LLM, Post-Training]
 math: true
 ---
 
-Reinforcement learning (RL) is often presented as a list of algorithms: REINFORCE [1], PPO [2], DPO [3]. Before applying it to large language models (LLMs), it helps to return to RL's basic object: **a decision process with rewards**. A text prefix is the state $s_t$, the next token is the action $a_t$, and appending that token produces the next state. A complete response is a trajectory. LLM generation is therefore a Markov decision process (MDP) with text prefixes as states and almost deterministic transitions.
+Reinforcement learning (RL) is often presented as a list of algorithms: REINFORCE [1], PPO [2], DPO [3]. Before applying it to large language models (LLMs), it helps to return to RL's basic object: **a decision process with rewards**. A text prefix is the state $s_t$, the next token is the action $a_t$, and appending that token produces the next state. A complete response is a trajectory. LLM generation is therefore a Markov decision process (MDP) with text prefixes as states and deterministic transitions.
 
 From this angle, RL is less a collection of algorithms than **a way to improve a policy from rewards observed on its trajectories**. The discussion follows two questions: where does the reward come from, and how does a reward assigned to a completed trajectory change the policy that generated it? Reward models, the advantage $A_t$, and the Kullback–Leibler (KL) constraint in reinforcement learning from human feedback (RLHF) all follow from those questions.
 
@@ -26,7 +26,7 @@ Start with the simplest case: **rewards can be verified directly.** Math and cod
 
 $$P(A\succ B)=\frac{w_A}{w_A+w_B}$$
 
-Taking reward $r$ directly as $w$ causes a problem. A reward is unconstrained in sign and magnitude, while $w_A$ and $w_B$ must be positive for the right-hand side to be a valid probability. **The softmax parameterization $w=\exp(r)$ keeps $r$ unconstrained while ensuring $w>0$.** A comparison can then be written as a difference between two scores:
+Taking reward $r$ directly as $w$ causes a problem. A reward is unconstrained in sign and magnitude, while $w_A$ and $w_B$ must be positive for the right-hand side to be a valid probability. **The exponential parameterization $w=\exp(r)$ keeps $r$ unconstrained while ensuring $w>0$.** A comparison can then be written as a difference between two scores:
 
 $$P(y^+\succ y^-\mid x)=\sigma\big(r(x,y^+)-r(x,y^-)\big)$$
 
@@ -66,17 +66,29 @@ $$\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sig
 <details class="math-note" markdown="1">
 <summary><b>MLE Loss Derivation</b></summary>
 
-① **Write the likelihood.** For $N$ preferences $\{(x_i,y_i^+,y_i^-)\}$, let $r_i^+=r_\phi(x_i,y_i^+)$ and $r_i^-=r_\phi(x_i,y_i^-)$. Assuming preferences are independent, the probability of the batch is the product of their probabilities:
-$$L(\phi)=\prod_{i=1}^N \sigma\big(r_i^+-r_i^-\big)$$
+① **Write the likelihood.** For $N$ preferences $\\{(x_i,y_i^+,y_i^-)\\}$, let $r_i^+=r_\phi(x_i,y_i^+)$ and $r_i^-=r_\phi(x_i,y_i^-)$. Assuming preferences are independent, the probability of the batch is the product of their probabilities:
+
+$$
+L(\phi)=\prod_{i=1}^N \sigma\big(r_i^+-r_i^-\big)
+$$
 
 ② **Take the log.** The product becomes a sum. Since $\log$ is monotonic, maximizing $L$ is equivalent to maximizing $\log L$:
-$$\log L(\phi)=\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)$$
+
+$$
+\log L(\phi)=\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)
+$$
 
 ③ **Turn it into a loss.** Training conventionally minimizes an objective, so negate it:
-$$-\log L(\phi)=-\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)$$
+
+$$
+-\log L(\phi)=-\sum_{i=1}^N \log\sigma\big(r_i^+-r_i^-\big)
+$$
 
 ④ **Average over the dataset.** Dividing by $N$ does not change the optimum and lets us write the result as an expectation:
-$$\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sigma(r_\phi^+-r_\phi^-)\big]$$
+
+$$
+\mathcal{L}_{RM}(\phi)=-\,\mathbb{E}_{(x,y^+,y^-)\sim\mathcal{D}}\big[\log\sigma(r_\phi^+-r_\phi^-)\big]
+$$
 
 </details>
 
@@ -140,7 +152,7 @@ $$\nabla\log P_\theta(\tau)=\sum_t\nabla\log\pi_\theta(a_t\mid s_t)$$
 $$
 \begin{aligned}
 P_\theta(\tau)
-&= P(s_1)\prod_t P(a_t\mid s_t)\,
+&= P(s_1)\prod_t \pi_\theta(a_t\mid s_t)\,
    \underbrace{P(s_{t+1}\mid s_t,a_t)}_{=1} \\
 &= P(s_1)\prod_t\pi_\theta(a_t\mid s_t)
 \end{aligned}
@@ -506,7 +518,7 @@ $$
 
 [SFT](https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft) and policy gradient can now be placed in the same frame. Written side by side, they share **the same optimization skeleton**:
 
-$$\mathcal{L}=-\,\mathbb{E}\Big[\sum_t w_t\,\log\pi_\theta(a_t\mid s_t)\Big]\quad(\pm\ \beta\,\text{KL})$$
+$$\mathcal{L}=-\,\mathbb{E}\Big[\sum_t w_t\,\log\pi_\theta(a_t\mid s_t)\Big]$$
 
 In SFT, $w_t\equiv1$ and samples come from an offline demonstration dataset, so training can only increase the probability of demonstrated tokens. In RL, $w_t=A_t$, the advantage computed from reward. Samples come from the model itself through on-policy sampling. RL can reward as well as penalize, and may exceed its demonstrations.
 
