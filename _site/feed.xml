@@ -5,8 +5,8 @@
         <description></description>
         <link>https://shawnyin128.github.io/</link>
         <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sat, 18 Jul 2026 01:46:29 -0400</pubDate>
-        <lastBuildDate>Sat, 18 Jul 2026 01:46:29 -0400</lastBuildDate>
+        <pubDate>Sat, 18 Jul 2026 01:55:04 -0400</pubDate>
+        <lastBuildDate>Sat, 18 Jul 2026 01:55:04 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
         
             <item>
@@ -222,20 +222,26 @@ A_t &amp;amp;:= G_t-V(s_t)
 
 &lt;h2 id=&quot;putting-reward-into-policy-gradient&quot;&gt;Putting Reward into Policy Gradient&lt;/h2&gt;
 
-&lt;p class=&quot;section-description&quot;&gt;Policy gradient only requires one scalar reward per trajectory. The source of that reward determines what the policy optimizes and where it can fail.&lt;/p&gt;
+&lt;p class=&quot;section-description&quot;&gt;The reward model supplies the terminal reward. The return and value baseline then turn that reward into the advantage used by policy gradient.&lt;/p&gt;
 
 &lt;p&gt;Policy gradient does not prescribe where reward comes from. For verifiable tasks, use the checker’s 0/1 output directly as $R$. For open-ended tasks, substitute the reward-model score $r_\phi(x,y)$ for $R$ and follow the same policy gradient.&lt;/p&gt;
 
 &lt;p&gt;From here on, fix a prompt $x$ and let $y=(a_1,\ldots,a_T)$ denote the complete sampled response. In the MDP notation above, $y$ is the generated part of the trajectory $\tau$. &lt;strong&gt;Because an LLM transition only appends each new token to the prefix, $y$ and $\tau$ are equivalent once $x$ is fixed.&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;Substituting $R=r_\phi(x,y)$ into the token-level policy gradient gives:&lt;/p&gt;
+&lt;p&gt;For this terminal-only reward, the return from every time step is $G_t=r_\phi(x,y)$. Subtracting the state baseline gives:&lt;/p&gt;
+
+\[A_t^{\mathrm{RM}}:=r_\phi(x,y)-V(s_t)\]
+
+&lt;p&gt;The policy gradient therefore uses:&lt;/p&gt;
 
 \[\nabla_\theta J_x
 =\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
 \left[
-r_\phi(x,y)
-\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\sum_t A_t^{\mathrm{RM}}\,
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)
 \right]\]
+
+&lt;p&gt;&lt;strong&gt;Reward and advantage are not competing choices: the reward defines the return, and subtracting the baseline turns that return into the advantage.&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;After fitting $r_\phi$, it is typically held fixed while a separate policy is optimized against it. The policy no longer sees human judgments. &lt;strong&gt;It is rewarded only for a higher reward-model score.&lt;/strong&gt;&lt;/p&gt;
 
@@ -273,7 +279,7 @@ r_\phi(x,y)
 
 &lt;p&gt;This form makes the sampled signal concrete. A response receives its reward-model score, then pays a penalty when the current policy makes it more likely than the reference policy does.&lt;/p&gt;
 
-&lt;p&gt;Directly differentiating this objective gives:&lt;/p&gt;
+&lt;p&gt;Before subtracting a value baseline, directly differentiating this objective gives:&lt;/p&gt;
 
 \[\nabla_\theta J_x
 =\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
@@ -284,6 +290,8 @@ r_\phi(x,y)
 \right)
 \nabla_\theta\log\pi_\theta(y\mid x)
 \right]\]
+
+&lt;p&gt;This is the exact response-level gradient without variance reduction. The detail below derives the KL term and decomposes its response-level penalty across tokens.&lt;/p&gt;
 
 &lt;details class=&quot;math-note&quot;&gt;
   &lt;summary&gt;&lt;b&gt;How the KL Penalty Enters the Policy Gradient&lt;/b&gt;&lt;/summary&gt;
@@ -311,7 +319,22 @@ r_\phi(x,y)
 \nabla_\theta\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
 \end{aligned}\]
 
-  &lt;p&gt;The reference policy is frozen, so the derivative inside the second sum is simply $\nabla_\theta\log\pi_\theta(y\mid x)$.&lt;/p&gt;
+  &lt;p&gt;The log-ratio is a difference of two log-probabilities. The reference policy is frozen, so its derivative with respect to $\theta$ is zero:&lt;/p&gt;
+
+\[\begin{aligned}
+\nabla_\theta
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+&amp;amp;=\nabla_\theta
+\left[
+\log\pi_\theta(y\mid x)
+-\log\pi_{ref}(y\mid x)
+\right]
+\\
+&amp;amp;=\nabla_\theta\log\pi_\theta(y\mid x)
+-0
+\\
+&amp;amp;=\nabla_\theta\log\pi_\theta(y\mid x)
+\end{aligned}\]
 
   &lt;p&gt;③ &lt;strong&gt;The second sum is zero.&lt;/strong&gt; Using $\pi_\theta\nabla_\theta\log\pi_\theta=\nabla_\theta\pi_\theta$, it becomes the gradient of the total probability assigned to all responses:&lt;/p&gt;
 
@@ -342,7 +365,7 @@ r_\phi(x,y)
 \right]
 \end{aligned}\]
 
-  &lt;p&gt;⑤ &lt;strong&gt;Combine the reward and KL gradients.&lt;/strong&gt; Gradient is linear, so the two terms in the objective can be differentiated separately:&lt;/p&gt;
+  &lt;p&gt;⑤ &lt;strong&gt;Combine the reward and KL gradients.&lt;/strong&gt; Gradients add linearly, so the two terms in the objective can be differentiated separately:&lt;/p&gt;
 
 \[\nabla_\theta J_x
 =\nabla_\theta
@@ -399,6 +422,31 @@ r_\phi(x,y)
   &lt;p&gt;The reward-model score arrives at the end of the response, while the KL penalty contributes a term at every generated token.&lt;/p&gt;
 
 &lt;/details&gt;
+
+&lt;p&gt;The token-level decomposition and the same past-return argument used earlier now recover the advantage. At time $t$, the regularized return contains the terminal reward-model score and only the KL penalties from the current token onward:&lt;/p&gt;
+
+\[G_t^{\mathrm{RLHF}}
+=r_\phi(x,y)
+-\beta\sum_{k=t}^{T}
+\log\frac{\pi_\theta(a_k\mid s_k)}
+{\pi_{ref}(a_k\mid s_k)}\]
+
+&lt;p&gt;Subtracting the state value gives the regularized advantage:&lt;/p&gt;
+
+\[A_t^{\mathrm{RLHF}}:=G_t^{\mathrm{RLHF}}-V(s_t)\]
+
+&lt;p&gt;Here, $V(s_t)$ estimates the expected regularized return from the current prefix.&lt;/p&gt;
+
+&lt;p&gt;The final policy gradient is therefore:&lt;/p&gt;
+
+\[\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\sum_t A_t^{\mathrm{RLHF}}\,
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\right]\]
+
+&lt;p&gt;&lt;strong&gt;The reward model defines the terminal reward, the KL term adds token-level penalties, and the value baseline turns their return into the advantage that updates the policy.&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 

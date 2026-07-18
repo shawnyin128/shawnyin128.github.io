@@ -234,22 +234,30 @@ Each token $a_t$ is updated in the direction that raises its probability, $\nabl
 
 ## Putting Reward into Policy Gradient
 
-<p class="section-description">Policy gradient only requires one scalar reward per trajectory. The source of that reward determines what the policy optimizes and where it can fail.</p>
+<p class="section-description">The reward model supplies the terminal reward. The return and value baseline then turn that reward into the advantage used by policy gradient.</p>
 
 Policy gradient does not prescribe where reward comes from. For verifiable tasks, use the checker's 0/1 output directly as $R$. For open-ended tasks, substitute the reward-model score $r_\phi(x,y)$ for $R$ and follow the same policy gradient.
 
 From here on, fix a prompt $x$ and let $y=(a_1,\ldots,a_T)$ denote the complete sampled response. In the MDP notation above, $y$ is the generated part of the trajectory $\tau$. **Because an LLM transition only appends each new token to the prefix, $y$ and $\tau$ are equivalent once $x$ is fixed.**
 
-Substituting $R=r_\phi(x,y)$ into the token-level policy gradient gives:
+For this terminal-only reward, the return from every time step is $G_t=r_\phi(x,y)$. Subtracting the state baseline gives:
+
+$$
+A_t^{\mathrm{RM}}:=r_\phi(x,y)-V(s_t)
+$$
+
+The policy gradient therefore uses:
 
 $$
 \nabla_\theta J_x
 =\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
 \left[
-r_\phi(x,y)
-\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\sum_t A_t^{\mathrm{RM}}\,
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)
 \right]
 $$
+
+**Reward and advantage are not competing choices: the reward defines the return, and subtracting the baseline turns that return into the advantage.**
 
 After fitting $r_\phi$, it is typically held fixed while a separate policy is optimized against it. The policy no longer sees human judgments. **It is rewarded only for a higher reward-model score.**
 
@@ -295,7 +303,7 @@ $$
 
 This form makes the sampled signal concrete. A response receives its reward-model score, then pays a penalty when the current policy makes it more likely than the reference policy does.
 
-Directly differentiating this objective gives:
+Before subtracting a value baseline, directly differentiating this objective gives:
 
 $$
 \nabla_\theta J_x
@@ -308,6 +316,8 @@ r_\phi(x,y)
 \nabla_\theta\log\pi_\theta(y\mid x)
 \right]
 $$
+
+This is the exact response-level gradient without variance reduction. The detail below derives the KL term and decomposes its response-level penalty across tokens.
 
 <details class="math-note" markdown="1">
 <summary><b>How the KL Penalty Enters the Policy Gradient</b></summary>
@@ -339,7 +349,24 @@ $$
 \end{aligned}
 $$
 
-The reference policy is frozen, so the derivative inside the second sum is simply $\nabla_\theta\log\pi_\theta(y\mid x)$.
+The log-ratio is a difference of two log-probabilities. The reference policy is frozen, so its derivative with respect to $\theta$ is zero:
+
+$$
+\begin{aligned}
+\nabla_\theta
+\log\frac{\pi_\theta(y\mid x)}{\pi_{ref}(y\mid x)}
+&=\nabla_\theta
+\left[
+\log\pi_\theta(y\mid x)
+-\log\pi_{ref}(y\mid x)
+\right]
+\\
+&=\nabla_\theta\log\pi_\theta(y\mid x)
+-0
+\\
+&=\nabla_\theta\log\pi_\theta(y\mid x)
+\end{aligned}
+$$
 
 ③ **The second sum is zero.** Using $\pi_\theta\nabla_\theta\log\pi_\theta=\nabla_\theta\pi_\theta$, it becomes the gradient of the total probability assigned to all responses:
 
@@ -443,6 +470,37 @@ $$
 The reward-model score arrives at the end of the response, while the KL penalty contributes a term at every generated token.
 
 </details>
+
+The token-level decomposition and the same past-return argument used earlier now recover the advantage. At time $t$, the regularized return contains the terminal reward-model score and only the KL penalties from the current token onward:
+
+$$
+G_t^{\mathrm{RLHF}}
+=r_\phi(x,y)
+-\beta\sum_{k=t}^{T}
+\log\frac{\pi_\theta(a_k\mid s_k)}
+{\pi_{ref}(a_k\mid s_k)}
+$$
+
+Subtracting the state value gives the regularized advantage:
+
+$$
+A_t^{\mathrm{RLHF}}:=G_t^{\mathrm{RLHF}}-V(s_t)
+$$
+
+Here, $V(s_t)$ estimates the expected regularized return from the current prefix.
+
+The final policy gradient is therefore:
+
+$$
+\nabla_\theta J_x
+=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\sum_t A_t^{\mathrm{RLHF}}\,
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\right]
+$$
+
+**The reward model defines the terminal reward, the KL term adds token-level penalties, and the value baseline turns their return into the advantage that updates the policy.**
 
 ## Conclusion
 
