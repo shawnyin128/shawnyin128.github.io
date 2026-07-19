@@ -516,13 +516,32 @@ $$
 
 ## Conclusion
 
-[SFT](https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft) and policy gradient can now be placed in the same frame. Written side by side, they share **the same optimization skeleton**:
+[SFT](https://shawnyin128.github.io/blogs/post-training-from-first-principles-sft) and policy gradient use the same local building block, the token score $\nabla_\theta\log\pi_\theta(a_t\mid s_t)$. Written side by side, however, their gradients differ in both the coefficient and the distribution inside the expectation:
 
-$$\mathcal{L}=-\,\mathbb{E}\Big[\sum_t w_t\,\log\pi_\theta(a_t\mid s_t)\Big]$$
+$$
+\begin{aligned}
+\nabla_\theta\mathcal{L}_{\mathrm{SFT}}
+&=
+-\,\mathbb{E}_{y\sim q(\cdot\mid x)}
+\left[
+\sum_t
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\right]
+\\
+\nabla_\theta J
+&=
+\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}
+\left[
+\sum_t
+A_t\,
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)
+\right]
+\end{aligned}
+$$
 
-In SFT, $w_t\equiv1$ and samples come from an offline demonstration dataset, so training can only increase the probability of demonstrated tokens. In RL, $w_t=A_t$, the advantage computed from reward. Samples come from the model itself through on-policy sampling. RL can reward as well as penalize, and may exceed its demonstrations.
+The equations make only the comparison used here. The SFT loss averages over target responses $y\sim q(\cdot\mid x)$ with a fixed coefficient of $1$. The on-policy policy-gradient objective averages over responses $y\sim\pi_\theta(\cdot\mid x)$ with the reward-derived advantage $A_t$. External data may still be used to define the reward in the second objective, so this comparison does not identify the general boundary between SFT and RL.
 
-Put differently, **SFT is the special case with a constant weight of 1 and offline demonstrations.** RL lets reward determine the weight and draws samples from the current policy. PPO makes this optimization stable. DPO rewrites the KL-regularized objective directly as a preference objective, avoiding a reward model. GRPO turns to verifiable rewards and removes the value network. All of them build on the relationship between reward and policy gradient developed here.
+PPO makes on-policy optimization stable. DPO rewrites the KL-regularized objective directly as a preference objective, avoiding a reward model. GRPO turns to verifiable rewards and removes the value network. All of them build on the relationship between reward and policy gradient developed here.
 
 ## References
 
