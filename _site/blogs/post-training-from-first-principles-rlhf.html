@@ -779,7 +779,7 @@ A_t\,
 \right]
 \end{aligned}\]
 
-<p>The equations make only the comparison used here. The SFT loss averages over target responses $y\sim q(\cdot\mid x)$ with a fixed coefficient of $1$. The on-policy policy-gradient objective averages over responses $y\sim\pi_\theta(\cdot\mid x)$ with the reward-derived advantage $A_t$. External data may still be used to define the reward in the second objective, so this comparison does not identify the general boundary between SFT and RL.</p>
+<p>Why do the expectations differ? <strong>SFT is supervised by a target trajectory</strong>, so it maximizes that trajectory’s probability and averages over $y\sim q(\cdot\mid x)$. <strong>On-policy RL has no target trajectory to imitate</strong>, so the policy samples its own trajectories and maximizes their expected reward under $y\sim\pi_\theta(\cdot\mid x)$. This also replaces SFT’s fixed coefficient $1$ with the reward-derived advantage $A_t$.</p>
 
 <p>PPO makes on-policy optimization stable. DPO rewrites the KL-regularized objective directly as a preference objective, avoiding a reward model. GRPO turns to verifiable rewards and removes the value network. All of them build on the relationship between reward and policy gradient developed here.</p>
 

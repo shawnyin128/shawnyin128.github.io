@@ -5,8 +5,8 @@
         <description></description>
         <link>https://shawnyin128.github.io/</link>
         <atom:link href="https://shawnyin128.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Mon, 20 Jul 2026 00:58:26 -0400</pubDate>
-        <lastBuildDate>Mon, 20 Jul 2026 00:58:26 -0400</lastBuildDate>
+        <pubDate>Mon, 20 Jul 2026 01:21:01 -0400</pubDate>
+        <lastBuildDate>Mon, 20 Jul 2026 01:21:01 -0400</lastBuildDate>
         <generator>Jekyll v4.4.1</generator>
         
             <item>
@@ -475,7 +475,7 @@ A_t\,
 \right]
 \end{aligned}\]
 
-&lt;p&gt;The equations make only the comparison used here. The SFT loss averages over target responses $y\sim q(\cdot\mid x)$ with a fixed coefficient of $1$. The on-policy policy-gradient objective averages over responses $y\sim\pi_\theta(\cdot\mid x)$ with the reward-derived advantage $A_t$. External data may still be used to define the reward in the second objective, so this comparison does not identify the general boundary between SFT and RL.&lt;/p&gt;
+&lt;p&gt;Why do the expectations differ? &lt;strong&gt;SFT is supervised by a target trajectory&lt;/strong&gt;, so it maximizes that trajectory’s probability and averages over $y\sim q(\cdot\mid x)$. &lt;strong&gt;On-policy RL has no target trajectory to imitate&lt;/strong&gt;, so the policy samples its own trajectories and maximizes their expected reward under $y\sim\pi_\theta(\cdot\mid x)$. This also replaces SFT’s fixed coefficient $1$ with the reward-derived advantage $A_t$.&lt;/p&gt;
 
 &lt;p&gt;PPO makes on-policy optimization stable. DPO rewrites the KL-regularized objective directly as a preference objective, avoiding a reward model. GRPO turns to verifiable rewards and removes the value network. All of them build on the relationship between reward and policy gradient developed here.&lt;/p&gt;
 
