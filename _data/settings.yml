@@ -99,7 +99,7 @@ selected_works_settings:
   items:
     - title: 'ClusQuant: Mitigating Outliers with Clustering-Based Representations for Low-Precision LRMs'
       venue: 'NeurIPS, 2026'
-      authors: 'Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang'
+      authors: 'Xingyu Liu, <strong>Xiangyang Yin</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang'
       link:
       image: '/images/works/clusquant.png'
       tag:

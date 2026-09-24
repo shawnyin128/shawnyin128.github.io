@@ -15,7 +15,7 @@ page_cover: '/images/header/pub_cover.jpg'
   <strong>ClusQuant: Mitigating Outliers with Clustering-Based Representations for Low-Precision LRMs</strong>
 </div>
 <div class="publication-authors">
-  Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang
+  Xingyu Liu, <strong>Xiangyang Yin</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang
 </div>
 <div class="publication-conference">
   Conference on Neural Information Processing Systems (NeurIPS), 2026
