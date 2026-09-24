@@ -12,6 +12,18 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card animate">
 <div class="publication-title">
+  <strong>ClusQuant: Mitigating Outliers with Clustering-Based Representations for Low-Precision LRMs</strong>
+</div>
+<div class="publication-authors">
+  Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang
+</div>
+<div class="publication-conference">
+  Conference on Neural Information Processing Systems (NeurIPS), 2026
+</div>
+</div>
+
+<div class="publication-card animate">
+<div class="publication-title">
   <a href="https://arxiv.org/abs/2605.28678">
     <strong>DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution</strong>
   </a>
