@@ -97,6 +97,12 @@ selected_works_settings:
   description:
   view_all_link: '/publications/'
   items:
+    - title: 'ClusQuant: Mitigating Outliers with Clustering-Based Representations for Low-Precision LRMs'
+      venue: 'NeurIPS, 2026'
+      authors: 'Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang'
+      link:
+      image: '/images/works/clusquant.png'
+      tag:
     - title: 'DREAM-R: Multimodal Speculative Reasoning with RL-Based Refined Drafting, Precise Verification, and Fully Parallel Execution'
       venue: 'ICML, 2026'
       authors: 'Yunhai Hu, Zining Liu, <strong>Xiangyang Yin</strong>, Tianhua Xia, BO BAO, Eric Sather, Vithursan Thangarasa, Sai Qian Zhang'
