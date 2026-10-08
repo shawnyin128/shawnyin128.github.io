@@ -133,6 +133,10 @@
   color: var(--text-dim, #666);
   white-space: nowrap;
 }
+.cv-duration {
+  display: block;
+  font-size: 0.85em;
+}
 .cv-grid dd {
   margin: 0;
 }

@@ -34,47 +34,55 @@ page_cover: '/images/header/about_cover.jpg'
 
 <h2>Academic Experience</h2>
 <dl class="cv-grid">
-<dt>Sep 2025 – May 2026</dt>
+<dt data-start="2025-05">May 2025 – Now</dt>
 <dd>
-<strong>Course Assistant</strong>, <a href="https://saiqianzhang.com/COURSE/" target="_blank"> Efficient AI Computing</a>, New York University, USA<br>
+<strong>Research Assistant</strong><br>
+<a href="https://saiqianzhang.com/Lab/" target="_blank">SAI Lab</a>, New York University, USA<br>
 </dd>
 
-<dt>May 2025 – Now</dt>
+<dt data-start="2025-09" data-end="2026-05">Sep 2025 – May 2026</dt>
 <dd>
-<strong>Research Assistant</strong>, <a href="https://saiqianzhang.com/Lab/" target="_blank">SAI Lab</a>, New York University, USA<br>
+<strong>Course Assistant</strong><br>
+<a href="https://saiqianzhang.com/COURSE/" target="_blank"> Efficient AI Computing</a>, New York University, USA<br>
 </dd>
 
-<dt>Sep 2019 – May 2020</dt>
+<dt data-start="2019-09" data-end="2020-05">Sep 2019 – May 2020</dt>
 <dd>
-<strong>Teaching Assistant</strong>, China Agricultural University, China<br>
+<strong>Teaching Assistant</strong><br>
+China Agricultural University, China<br>
 </dd>
 </dl><br>
 
 <h2>Professional Experience</h2>
 <dl class="cv-grid">
-<dt>Jul 2026 – Now</dt>
+<dt data-start="2026-07">Jul 2026 – Now</dt>
 <dd>
-<strong>Machine Learning Research Engineer</strong>, <a href="https://www.cerebras.ai/" target="_blank">Cerebras Systems</a>, Internship, Canada<br>
+<strong>Machine Learning Research Engineer</strong><br>
+<a href="https://www.cerebras.ai/" target="_blank">Cerebras Systems</a>, Internship, Canada<br>
 </dd>
 
-<dt>Aug 2023 – Jul 2024</dt>
+<dt data-start="2023-08" data-end="2024-07">Aug 2023 – Jul 2024</dt>
 <dd>
-<strong>Software Developer</strong>, <a href="https://en.hundsun.com/" target="_blank">Hundsun Technology</a>, Full-time, China<br>
+<strong>Software Developer</strong><br>
+<a href="https://en.hundsun.com/" target="_blank">Hundsun Technology</a>, Full-time, China<br>
 </dd>
 
-<dt>May 2021 – Aug 2021</dt>
+<dt data-start="2021-05" data-end="2021-08">May 2021 – Aug 2021</dt>
 <dd>
-<strong>Data Scientist</strong>, <a href="https://www.kuaishou.com/en" target="_blank">Kuaishou Technology</a>, Internship, China<br>
+<strong>Data Scientist</strong><br>
+<a href="https://www.kuaishou.com/en" target="_blank">Kuaishou Technology</a>, Internship, China<br>
 </dd>
 
-<dt>Sep 2020 – Jan 2021</dt>
+<dt data-start="2020-09" data-end="2021-01">Sep 2020 – Jan 2021</dt>
 <dd>
-<strong>Asset Analyst</strong>, Tianhong Asset Management, Internship, China<br>
+<strong>Asset Analyst</strong><br>
+Tianhong Asset Management, Internship, China<br>
 </dd>
 
-<dt>Jun 2018 – Aug 2018</dt>
+<dt data-start="2018-06" data-end="2018-08">Jun 2018 – Aug 2018</dt>
 <dd>
-<strong>Quant Research</strong>, Chinese Academy of Sciences, Internship, China<br>
+<strong>Quant Research</strong><br>
+Chinese Academy of Sciences, Internship, China<br>
 </dd>
 </dl><br>
 
@@ -116,3 +124,4 @@ page_cover: '/images/header/about_cover.jpg'
 </dd>
 </dl><br>
 </section>
+<script src="{{ site.baseurl }}/js/cv-duration.js" defer></script>
