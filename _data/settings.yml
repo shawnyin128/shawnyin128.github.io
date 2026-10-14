@@ -70,22 +70,22 @@ interests_settings:
       icon: 'fa-solid fa-fingerprint'
       description: Studying what makes a visual representation universal, useful, and "good".
       sub_items:
+        - World Model
         - Vision
-        - Multimodal
         - Embodied
     - title: AI Efficiency
       icon: 'fa-solid fa-bolt'
-      description: Hardware-software co-design across speculative decoding, quantization, and pruning.
+      description: Hardware-software co-design across speculative decoding, quantization, and sparsity.
       sub_items:
         - Quantization
         - Speculative Decoding
-        - Pruning
+        - Sparsity
     - title: Agents
       icon: 'fa-solid fa-robot'
       description: Building agent tooling and constructing benchmarks for evaluating agent capabilities.
       sub_items:
-        - Benchmark
-        - Tool
+        - Dataset/Benchmark
+        - Architecture
         - Application
 
 
