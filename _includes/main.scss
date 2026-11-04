@@ -188,6 +188,10 @@
   margin: 0;
 }
 
+.publications-grid + .publication-year-header {
+  margin-top: 48px;
+}
+
 @media (max-width: 640px) {
   .publication-year-header {
     flex-direction: column;

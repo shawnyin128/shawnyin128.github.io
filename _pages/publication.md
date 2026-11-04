@@ -10,6 +10,9 @@ page_cover: '/images/header/pub_cover.jpg'
 <div class="publication-year-header animate">
   <h2>2026</h2>
   {% include author-legend.html %}
+  <!-- Maintenance: When adding 2027 or a later year, move the author-legend include
+       to the newest year header. Keep one legend for the full publications list;
+       do not repeat it for older years. The homepage legend is independent. -->
 </div>
 <div class="publications-grid">
 
@@ -62,6 +65,27 @@ page_cover: '/images/header/pub_cover.jpg'
 </div>
 <div class="publication-conference">
   International Conference on Learning Representations (ICLR), 2026
+</div>
+</div>
+
+</div>
+
+<div class="publication-year-header animate">
+  <h2>2021</h2>
+</div>
+<div class="publications-grid">
+
+<div class="publication-card animate">
+<div class="publication-title">
+  <a href="https://doi.org/10.1145/3468891.3468902">
+    <strong>Pigmented Skin Lesions Image Classification Based on Residual Network</strong>
+  </a>
+</div>
+<div class="publication-authors">
+  <strong>Xiangyang Yin</strong>
+</div>
+<div class="publication-conference">
+  6th International Conference on Machine Learning Technologies (ICMLT), 2021
 </div>
 </div>
 
