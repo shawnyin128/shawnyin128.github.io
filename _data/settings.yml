@@ -94,10 +94,16 @@ interests_settings:
 selected_works_settings:
   enable: true
   title: Selected Works
-  description:
+  description: '* Equal contribution; &#9993; Corresponding author.'
   view_all_link: '/publications/'
   items:
-    - title: 'ClusQuant: Mitigating Outliers with Clustering-Based Representations for Low-Precision LRMs'
+    - title: 'SpecCompact: Accelerating LLM Agent Context Compaction with Slot-Parallel Semantic Speculative Verification'
+      venue: 'Preprint (arXiv forthcoming), 2026'
+      authors: 'Yulu An*, Yifei Feng*, <strong>Xiangyang Yin*<sup title="Corresponding author" aria-label="Corresponding author">&#9993;</sup></strong>'
+      link:
+      image:
+      tag:
+    - title: 'CodeQuant2: Enhanced Outlier Mitigation and Adaptive Clustering for Low-Precision LRMs'
       venue: 'NeurIPS, 2026'
       authors: 'Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang'
       link:

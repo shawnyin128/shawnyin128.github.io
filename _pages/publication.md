@@ -7,12 +7,26 @@ image:
 page_cover: '/images/header/pub_cover.jpg'
 ---
 
+<p class="publication-authors">* Equal contribution; &#9993; Corresponding author.</p>
+
 <h2 class="animate"><strong>2026</strong></h2>
 <div class="publications-grid">
 
 <div class="publication-card animate">
 <div class="publication-title">
-  <strong>ClusQuant: Mitigating Outliers with Clustering-Based Representations for Low-Precision LRMs</strong>
+  <strong>SpecCompact: Accelerating LLM Agent Context Compaction with Slot-Parallel Semantic Speculative Verification</strong>
+</div>
+<div class="publication-authors">
+  Yulu An*, Yifei Feng*, <strong>Xiangyang Yin*<sup title="Corresponding author" aria-label="Corresponding author">&#9993;</sup></strong>
+</div>
+<div class="publication-conference">
+  Preprint (arXiv forthcoming), 2026
+</div>
+</div>
+
+<div class="publication-card animate">
+<div class="publication-title">
+  <strong>CodeQuant2: Enhanced Outlier Mitigation and Adaptive Clustering for Low-Precision LRMs</strong>
 </div>
 <div class="publication-authors">
   Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang
