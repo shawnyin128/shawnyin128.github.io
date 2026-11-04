@@ -7,9 +7,10 @@ image:
 page_cover: '/images/header/pub_cover.jpg'
 ---
 
-<p class="publication-authors">* Equal contribution; &#9993; Corresponding author.</p>
-
-<h2 class="animate"><strong>2026</strong></h2>
+<div class="publication-year-header animate">
+  <h2>2026</h2>
+  {% include author-legend.html %}
+</div>
 <div class="publications-grid">
 
 <div class="publication-card animate">

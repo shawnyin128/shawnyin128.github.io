@@ -51,6 +51,7 @@
             </article>
             {% endfor %}
           </div>
+          {% include author-legend.html %}
 
         </div>
       </div>
@@ -63,6 +64,11 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.selected-works .author-legend {
+  justify-content: flex-end;
+  margin-top: 16px;
 }
 
 .selected-works .work-card {
@@ -103,12 +109,17 @@
 .selected-works .work-card__title {
   margin: 0 0 6px;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.4;
   color: var(--text-strong);
 }
 .selected-works .work-card__title a {
   color: inherit;
+  font-weight: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--border-color);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 .selected-works .work-card__title a::after {
   content: "";
@@ -146,6 +157,9 @@
 }
 
 @media (max-width: 576px) {
+  .selected-works .author-legend {
+    justify-content: flex-start;
+  }
   .selected-works .work-card {
     flex-direction: column;
     gap: 14px;

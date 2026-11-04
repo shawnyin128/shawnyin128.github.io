@@ -94,7 +94,7 @@ interests_settings:
 selected_works_settings:
   enable: true
   title: Selected Works
-  description: '* Equal contribution; &#9993; Corresponding author.'
+  description:
   view_all_link: '/publications/'
   items:
     - title: 'SpecCompact: Accelerating LLM Agent Context Compaction with Slot-Parallel Semantic Speculative Verification'

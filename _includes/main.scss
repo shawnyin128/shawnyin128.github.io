@@ -150,11 +150,56 @@
    Publications Layout
    ========================= */
 
+.author-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  color: var(--text-mid);
+  opacity: .8;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.author-legend__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.author-legend__symbol {
+  font-weight: 600;
+}
+
+.publication-year-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.page__content .publication-year-header h2 {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .publication-year-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .publications-grid {
   display: flex;
   flex-direction: column;
   gap: 1rem;               /* 卡片之间更松 */
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 
@@ -194,7 +239,7 @@
    ========================= */
 
 .publication-title {
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.5;
   margin-bottom: 0.35rem;       /* title -> authors 拉开 */
 }
@@ -224,16 +269,22 @@
    Links
    ========================= */
 
-.publication-title a {
+.page__content .publication-title a {
   color: inherit;
-  text-decoration: none;
+  font-weight: inherit;
+  border-bottom: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--border-color);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
-/* Hover: Light / Dark 各用一个更和谐的蓝 */
-.scheme--light .publication-title a:hover {
-  color: #0b63a8;
+.publication-title strong {
+  font-weight: inherit;
 }
 
-.scheme--dark .publication-title a:hover {
-  color: #6bb6ff;
+.page__content .publication-title a:hover,
+.page__content .publication-title a:focus-visible {
+  color: inherit;
+  text-decoration-color: currentColor;
 }
