@@ -101,7 +101,8 @@ selected_works_settings:
       venue: 'Preprint (arXiv forthcoming), 2026'
       authors: 'Yulu An*, Yifei Feng*, <strong>Xiangyang Yin*<sup title="Corresponding author" aria-label="Corresponding author">&#9993;</sup></strong>'
       link:
-      image:
+      image: '/images/works/speccompact.png'
+      image_fit: contain
       tag:
     - title: 'CodeQuant2: Enhanced Outlier Mitigation and Adaptive Clustering for Low-Precision LRMs'
       venue: 'NeurIPS, 2026'

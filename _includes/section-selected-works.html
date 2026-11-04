@@ -24,7 +24,7 @@
             {% for work in site.data.settings.selected_works_settings.items limit:6 %}
             <article class="work-card animate">
               {% if work.image %}
-              <div class="work-card__image">
+              <div class="work-card__image{% if work.image_fit == 'contain' %} work-card__image--contain{% endif %}">
                 <img class="lazy" data-src="{{ work.image | relative_url }}" alt="{{ work.title }}">
               </div>
               {% endif %}
@@ -99,6 +99,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.selected-works .work-card__image--contain {
+  background: #fff;
+}
+.selected-works .work-card__image--contain img {
+  object-fit: contain;
 }
 
 .selected-works .work-card__body {
