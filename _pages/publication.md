@@ -85,7 +85,7 @@ page_cover: '/images/header/pub_cover.jpg'
   <strong>Xiangyang Yin</strong>
 </div>
 <div class="publication-conference">
-  6th International Conference on Machine Learning Technologies (ICMLT), 2021
+  International Conference on Machine Learning Technologies (ICMLT), 2021
 </div>
 </div>
 
