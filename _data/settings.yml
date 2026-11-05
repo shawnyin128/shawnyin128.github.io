@@ -98,9 +98,9 @@ selected_works_settings:
   view_all_link: '/publications/'
   items:
     - title: 'SpecCompact: Accelerating LLM Agent Context Compaction with Slot-Parallel Semantic Speculative Verification'
-      venue: 'Preprint (arXiv forthcoming), 2026'
+      venue: 'arXiv preprint, 2026'
       authors: 'Yulu An*, Yifei Feng*, <strong>Xiangyang Yin*<sup title="Corresponding author" aria-label="Corresponding author">&#9993;</sup></strong>'
-      link:
+      link: 'https://arxiv.org/abs/2611.06876'
       image: '/images/works/speccompact.png'
       image_fit: contain
       tag:
