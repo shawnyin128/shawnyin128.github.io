@@ -32,7 +32,9 @@ page_cover: '/images/header/pub_cover.jpg'
 
 <div class="publication-card animate">
 <div class="publication-title">
-  <strong>CodeQuant2: Enhanced Outlier Mitigation and Adaptive Clustering for Low-Precision LRMs</strong>
+  <a href="https://arxiv.org/abs/2611.09868">
+    <strong>CodeQuant2: Enhanced Outlier Mitigation and Adaptive Clustering for Low-Precision LRMs</strong>
+  </a>
 </div>
 <div class="publication-authors">
   Xingyu Liu*, <strong>Xiangyang Yin*</strong>, Tianhua Xia, Haiyu Wang, Sai Qian Zhang
