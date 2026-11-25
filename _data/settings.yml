@@ -97,6 +97,13 @@ selected_works_settings:
   description:
   view_all_link: '/publications/'
   items:
+    - title: 'E²Sim: Long-Horizon Simulation of Everyday Human Behavior with Evolving States'
+      venue: 'arXiv preprint, 2026'
+      authors: 'Ziwei Gong*, <strong>Xiangyang Yin*</strong>, Thai Quoc On, Lin Ai, Julia Hirschberg, Haotong Yang'
+      link: 'https://arxiv.org/abs/2611.31641'
+      image: '/images/works/e2sim.png'
+      image_fit: contain
+      tag:
     - title: 'SpecCompact: Accelerating LLM Agent Context Compaction with Slot-Parallel Semantic Speculative Verification'
       venue: 'arXiv preprint, 2026'
       authors: 'Yulu An*, Yifei Feng*, <strong>Xiangyang Yin*<sup title="Corresponding author" aria-label="Corresponding author">&#9993;</sup></strong>'
